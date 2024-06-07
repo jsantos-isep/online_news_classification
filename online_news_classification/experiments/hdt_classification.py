@@ -189,8 +189,20 @@ def classify(args, files, model_pkl_file):
         for d in drifts:
             plt.axvline(x=d["index"], color="r")
         ax.legend()
-        plt.savefig(plot_file + "_" + str(args.capitalization) + "_" + args.classification_type
-                    + "_" + args.feature_extraction + "_" + args.text + "_" + args.dataset_type + "_plot.png")
+        plt.savefig(
+            plot_file
+            + "_"
+            + str(args.capitalization)
+            + "_"
+            + args.classification_type
+            + "_"
+            + args.feature_extraction
+            + "_"
+            + args.text
+            + "_"
+            + args.dataset_type
+            + "_plot.png"
+        )
 
         # create summary
         with open(
@@ -210,14 +222,36 @@ def classify(args, files, model_pkl_file):
             newline=""
         ) as f:
             writer = csv.writer(f, delimiter=";")
-            writer.writerow(["nº documents", "categories", "mean_accuracy", "time", "drifts", "summary"])
+            writer.writerow(
+                [
+                    "nº documents",
+                    "categories",
+                    "mean_accuracy",
+                    "time",
+                    "drifts",
+                    "summary"
+                ]
+            )
             writer.writerow([index, dataset["category"].nunique(), metric.get().real, (time.time() - start_time), len(drifts), pipeline_original["classifier"].summary])
             f.close()
 
         # create plot aux
-        df = pd.DataFrame({"preq" : preq, "preq_a" : preq_a, "preq_w": preq_w})
-        df.to_csv(plot_aux_file +"_" + str(args.capitalization) + "_" + args.classification_type
-                    + "_" + args.feature_extraction + "_" + args.text  + "_" + args.dataset_type + "_plot_aux.csv", index=False)    
+        df = pd.DataFrame({"preq": preq, "preq_a": preq_a, "preq_w": preq_w})
+        df.to_csv(
+            plot_aux_file
+            + "_"
+            + str(args.capitalization)
+            + "_"
+            + args.classification_type
+            + "_"
+            + args.feature_extraction
+            + "_"
+            + args.text
+            + "_"
+            + args.dataset_type
+            + "_plot_aux.csv",
+            index=False
+        )
 
         # with open(plot_aux_file +"_" + str(args.capitalization) + "_" + args.classification_type
         #             + "_" + args.feature_extraction + "_" + args.text  + "_plot_aux.csv", "w", newline="") as f:
@@ -227,20 +261,51 @@ def classify(args, files, model_pkl_file):
         #     writer.writerow([preq, preq_a, preq_w])
         #     f.close()
         
-        with open(plot_aux_file +"_" + str(args.capitalization) + "_" + args.classification_type
-                    + "_" + args.feature_extraction + "_" + args.text  + "_" + args.dataset_type + "_accuracy_aux.csv", "w", newline="") as f:
+        with open(
+            plot_aux_file
+            + "_"
+            + str(args.capitalization)
+            + "_"
+            + args.classification_type
+            + "_"
+            + args.feature_extraction
+            + "_"
+            + args.text
+            + "_"
+            + args.dataset_type
+            + "_accuracy_aux.csv",
+            "w",
+            newline="",
+        ) as f:
             writer = csv.writer(f, delimiter=";")
             writer.writerow(["accuracy"])
             writer.writerow([accuracies])
             f.close()
 
-        #create tree    
-        with open(tree_file +"_" + str(args.capitalization) + "_" + args.classification_type
-                    + "_" + args.feature_extraction + "_" + args.text + "_tree.dot", "w") as f:
+        # create tree
+        with open(
+            tree_file
+            + "_"
+            + str(args.capitalization)
+            + "_"
+            + args.classification_type
+            + "_"
+            + args.feature_extraction
+            + "_"
+            + args.text
+            + "_tree.dot",
+            "w",
+        ) as f:
             f.write(str(pipeline_original["classifier"].draw()))
 
-        with open(model_pkl_file, "wb") as model_file:  
-            model_to_file = {"model": pipeline_original, "preq": preq, "preq_a": preq_a, "preq_w": preq_w, "accuracies": accuracies}
+        with open(model_pkl_file, "wb") as model_file:
+            model_to_file = {
+                "model": pipeline_original,
+                "preq": preq,
+                "preq_a": preq_a,
+                "preq_w": preq_w,
+                "accuracies": accuracies,
+            }
             pickle.dump(model_to_file, model_file)
         logging.info(model_to_file)
         send2trash(file)
