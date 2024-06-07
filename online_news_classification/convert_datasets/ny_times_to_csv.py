@@ -47,7 +47,7 @@ def convert(f, args, output_file):
             "byline.organization",
             "_id"
         ],
-        axis=1
+        axis=1,
     )
     data["final_tags"] = pd.Series(dtype="object")
 

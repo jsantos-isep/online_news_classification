@@ -5,9 +5,11 @@ import time
 import pandas as pd
 import spacy
 from dotenv import load_dotenv
-from news_classification_lib.functions import (enrich_functions,
-                                               manage_datasets_functions,
-                                               setup_functions)
+from news_classification_lib.functions import (
+    enrich_functions,
+    manage_datasets_functions,
+    setup_functions
+)
 
 load_dotenv()
 
