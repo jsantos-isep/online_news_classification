@@ -16,8 +16,7 @@ def main():
     args = setup_functions.get_arg_parser_to_csv().parse_args()
     start_time = setup_functions.initialize("cnn_to_csv")
     dataset = manage_datasets_functions.read_csv_dataset(
-        filename=args.input,
-        separator=","
+        filename=args.input, separator=","
     )
     dataset = dataset[dataset["Headline"] != ""]
     dataset = dataset[dataset["Description"] != ""]
@@ -38,7 +37,7 @@ def main():
             "Url",
             "Second headline",
             "Date published",
-            "Keywords"
+            "Keywords",
         ],
         axis=1,
     )

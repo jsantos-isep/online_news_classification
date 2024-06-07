@@ -31,7 +31,7 @@ def convert(f, args, output_file):
             "pillarId",
             "isHosted",
             "apiUrl",
-            "webUrl"
+            "webUrl",
         ],
         axis=1,
     )
