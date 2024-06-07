@@ -20,7 +20,21 @@ def convert(f, args, output_file):
     data["category"] = data["sectionId"]
     data = data[data["title"] != ""]
     data = data[data["abstract"] != ""]
-    data = data.drop(["id", "type", "webTitle", "fields.trailText", "fields.headline", "pillarName", "pillarId", "isHosted", "apiUrl", "webUrl"], axis=1)
+    data = data.drop(
+        [
+            "id",
+            "type",
+            "webTitle",
+            "fields.trailText",
+            "fields.headline",
+            "pillarName",
+            "pillarId",
+            "isHosted",
+            "apiUrl",
+            "webUrl"
+        ],
+        axis=1,
+    )
     data["final_tags"] = pd.Series(dtype="object")
 
     for index, row in data.iterrows():

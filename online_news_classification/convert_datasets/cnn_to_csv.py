@@ -29,8 +29,18 @@ def main():
     dataset["abstract_entities"] = pd.Series(dtype="object")
     dataset["entities"] = pd.Series(dtype="object")
     dataset = dataset.drop(
-        ["Index", "Headline", "Category", "Description", "Article text", "Url", "Second headline", "Date published", "Keywords"],
-        axis=1
+        [
+            "Index",
+            "Headline",
+            "Category",
+            "Description",
+            "Article text",
+            "Url",
+            "Second headline",
+            "Date published",
+            "Keywords"
+        ],
+        axis=1,
     )
     manage_datasets_functions.save_dataset(dataset, args.output)
     logging.info("--- %s seconds ---" % (time.time() - start_time))
