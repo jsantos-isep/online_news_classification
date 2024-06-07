@@ -12,13 +12,17 @@ load_dotenv()
 def main():
     args = setup_functions.get_arg_parser_split().parse_args()
     start_time = setup_functions.initialize("split_file_" + args.dataset)
-    input_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_file)    
+    input_file = os.path.join(
+        os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_file
+    )    
     output_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.out_dir)
 
     with pd.read_csv(input_file, chunksize=args.num_lines, delimiter=";") as reader:
         for i, chunk in enumerate(reader):
             chunk = chunk.drop(["Unnamed: 0"], axis=1)
-            chunk.to_csv(output_file + args.dataset+"_"+str(i)+".csv", header=True, sep=";")
+            chunk.to_csv(
+                output_file + args.dataset+"_"+str(i)+".csv", header=True, sep=";"
+            )
     logging.info("--- %s seconds ---" % (time.time() - start_time))
 
 
