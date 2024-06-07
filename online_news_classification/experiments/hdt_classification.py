@@ -245,30 +245,49 @@ def classify(args, files, model_pkl_file):
         logging.info(model_to_file)
         send2trash(file)
 
+
 def main():
-    args = setup_functions.get_arg_parser_ner_semantic_classification().parse_args()
-    start_time = setup_functions.initialize("new_experiment_"+str(args.capitalization)+"_"+args.dataset)
-    in_directory = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir)
-    tmp_directory = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir)
+    args = functions.setup_functions.get_arg_parser_ner_semantic_classification().parse_args()
+    start_time = functions.setup_functions.initialize(
+        "new_experiment_" + str(args.capitalization)+"_"+args.dataset
+    )
+    in_directory = os.path.join(
+        os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
+    )
+    tmp_directory = os.path.join(
+        os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
+    )
     if (args.dataset_format == "file"):
         files_copy = realsorted(glob.glob(in_directory + "*.csv"))
-        #logging.info(files_copy)
+        # logging.info(files_copy)
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
         files = realsorted(glob.glob(tmp_directory + "*.csv"))
     else:
         files_copy = natsorted(glob.glob(in_directory + "*.csv"))
-        #logging.info(files_copy)
+        # logging.info(files_copy)
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
-        files = natsorted(glob.glob(tmp_directory + "*.csv")) 
-    
-    model_pkl_file = os.path.join(os.getcwd(), os.getenv("MODELS_FOLDER") + "model_dt_"+str(args.dataset)+ "_" + str(args.capitalization) + "_" + args.classification_type + "_" + args.feature_extraction + "_" + args.text+ ".pkl")
+        files = natsorted(glob.glob(tmp_directory + "*.csv"))
+
+    model_pkl_file = os.path.join(
+        os.getcwd(),
+        os.getenv("MODELS_FOLDER")
+        + "model_dt_"
+        + str(args.dataset)
+        + "_"
+        + str(args.capitalization)
+        + "_"
+        + args.classification_type
+        + "_"
+        + args.feature_extraction
+        + "_"
+        + args.text
+        + ".pkl"
+    )
     classify(args, files, model_pkl_file)
-        
 
     logging.info("--- %s seconds ---" % (time.time() - start_time))
-
 
 
 if __name__ == "__main__":
