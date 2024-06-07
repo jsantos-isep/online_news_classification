@@ -5,9 +5,9 @@ import shutil
 import time
 from multiprocessing import Pool
 
+import news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
-import news_classification_lib.functions as functions
 from send2trash import send2trash
 
 load_dotenv()
@@ -43,7 +43,13 @@ def enrich(filename):
     try:
         functions.manage_datasets_functions.save_dataset(dataset, output_file)
         if args.enrich_mode == "folder":
-            send2trash(os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + os.path.join(args.tmp_dir, os.path.basename(filename))))
+            send2trash(
+                os.path.join(
+                    os.getcwd(),
+                    os.getenv("DATASETS_FOLDER")
+                    + os.path.join(args.tmp_dir, os.path.basename(filename))
+                )
+            )
     except OSError:
         logging.info("Erro no guardar ficheiro!")
     logging.info("--- %s seconds ---" % (time.time() - start_time))
@@ -52,9 +58,14 @@ def enrich(filename):
 def main():
     args = functions.setup_functions.get_arg_parser_enrich().parse_args()
     if args.enrich_mode == "folder":
-        in_directory = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir)
-        tmp_directory = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir)
-        if (args.dataset_format == "file"):
+        in_directory = os.path.join(
+            os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
+        )
+        tmp_directory = os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER") + args.tmp_dir
+        )
+        if args.dataset_format == "file":
             files_copy = sorted(glob.glob(in_directory + "*.csv"), key=get_key)
             files = sorted(glob.glob(tmp_directory + "*.csv"), key=get_key)
 
