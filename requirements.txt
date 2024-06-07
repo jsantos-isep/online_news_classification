@@ -1,0 +1,13 @@
+nltk~=3.8.1
+river~=0.21.0
+spacy~=3.5.3
+matplotlib~=3.7.1
+setuptools~=67.8.0
+graphviz~=0.20.1
+pandas~=2.0.2
+refined~=1.0
+requests~=2.26.0
+gnews~=0.2.7
+scikit-learn~=1.2.2
+wikidataintegrator~=0.9.30
+news-classification-lib=0.1.0
