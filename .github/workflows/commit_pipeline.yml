@@ -28,7 +28,7 @@ jobs:
         with:
           ignore: "E203,W503"
           max-line-length: "88"
-          path: "./online_news_classification_lib"
+          path: "./online_news_classification"
 
   isort:
     runs-on: ubuntu-latest
