@@ -38,7 +38,9 @@ def main():
             logging.info(response.status_code)
             if response.status_code == 200:
                 logging.info(response.json()["response"]["meta"]["hits"])
-                json_string = json.dumps({"results": response.json()["response"]["docs"]})
+                json_string = json.dumps(
+                    {"results": response.json()["response"]["docs"]}
+                )
                 with open(
                     os.getenv("DATASETS_FOLDER_NY_TIMES_ORIGINAL")
                     + "the_ny_times_"
@@ -46,7 +48,7 @@ def main():
                     + "-"
                     + str(current_month)
                     + ".json",
-                    "w"
+                    "w",
                 ) as outfile:
                     outfile.write(json_string)
             current_month += 1
