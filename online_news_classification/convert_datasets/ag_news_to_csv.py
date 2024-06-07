@@ -1,11 +1,7 @@
 import logging
-import sys
 import time
-
-import pandas as pd
 from dotenv import load_dotenv
 from news_classification_lib.functions import (
-    enrich_functions,
     manage_datasets_functions,
     setup_functions,
 )

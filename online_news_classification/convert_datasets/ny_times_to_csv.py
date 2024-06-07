@@ -1,17 +1,11 @@
 import logging
 import os
-import sys
-import time
-
 import pandas as pd
-import spacy
 from dotenv import load_dotenv
 from news_classification_lib.functions import (
-    enrich_functions,
     manage_datasets_functions,
     setup_functions,
 )
-from refined.inference.processor import Refined
 
 load_dotenv()
 
