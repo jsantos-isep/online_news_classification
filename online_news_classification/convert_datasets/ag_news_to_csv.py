@@ -18,8 +18,7 @@ def main():
     start_time = setup_functions.initialize("ag_news_to_csv")
     logging.info("Start converting AG News to CSV")
     dataset = manage_datasets_functions.read_csv_dataset(
-        filename=args.input_file,
-        separator=","
+        filename=args.input_file, separator=","
     )
     dataset = dataset[dataset["Title"] != ""]
     dataset = dataset[dataset["Description"] != ""]

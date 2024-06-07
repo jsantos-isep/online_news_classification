@@ -14,7 +14,7 @@ load_dotenv()
 
 def convert(f, args, output_file):
     dataset = manage_datasets_functions.read_json_dataset(filename=f)
-    data = pd.json_normalize(dataset["results"][0],max_level=1)
+    data = pd.json_normalize(dataset["results"][0], max_level=1)
     data["title"] = data["fields.headline"]
     data["abstract"] = data["fields.trailText"]
     data["category"] = data["sectionId"]

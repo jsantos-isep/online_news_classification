@@ -16,8 +16,19 @@ def main():
     args = setup_functions.get_arg_parser_to_csv().parse_args()
     start_time = setup_functions.initialize("mind_to_csv")
     logging.info("Start converting MiND to CSV")
-    columns = ["news_id", "category", "subcategory", "title", "abstract", "url", "title_entities", "abstract_entities"]
-    dataset = manage_datasets_functions.read_table_dataset(filename=args.input, columns=columns)
+    columns = [
+        "news_id",
+        "category",
+        "subcategory",
+        "title",
+        "abstract",
+        "url",
+        "title_entities",
+        "abstract_entities"
+    ]
+    dataset = manage_datasets_functions.read_table_dataset(
+        filename=args.input, columns=columns
+    )
     dataset = dataset.dropna()
     dataset = dataset[dataset["title"] != ""]
     dataset = dataset[dataset["abstract"] != ""]
