@@ -23,9 +23,32 @@ def convert(f, args, output_file):
     data = data[data["title"] != ""]
     data = data[data["abstract"] != ""]
     data = data[data["category"] != ""]
-    data = data.drop(["multimedia", "print_section", "snippet", "source", "lead_paragraph", "print_page", "word_count", "byline.person", "headline.kicker",
-            "document_type", "news_desk", "headline.main", "headline.content_kicker", "headline.print_headline", "headline.name", "headline.seo",
-            "type_of_material", "headline.sub", "byline.original", "byline.organization", "_id"], axis=1)
+    data = data.drop(
+        [
+            "multimedia",
+            "print_section",
+            "snippet",
+            "source",
+            "lead_paragraph",
+            "print_page",
+            "word_count",
+            "byline.person",
+            "headline.kicker",
+            "document_type",
+            "news_desk",
+            "headline.main",
+            "headline.content_kicker",
+            "headline.print_headline",
+            "headline.name",
+            "headline.seo",
+            "type_of_material",
+            "headline.sub",
+            "byline.original",
+            "byline.organization",
+            "_id"
+        ],
+        axis=1
+    )
     data["final_tags"] = pd.Series(dtype="object")
 
     for index, row in data.iterrows():
