@@ -14,7 +14,7 @@ def main():
     start_time = setup_functions.initialize("split_file_" + args.dataset)
     input_file = os.path.join(
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_file
-    ) 
+    )
     output_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.out_dir)
 
     with pd.read_csv(input_file, chunksize=args.num_lines, delimiter=";") as reader:
