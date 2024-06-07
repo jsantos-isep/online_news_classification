@@ -61,7 +61,9 @@ def classify(args, files, model_pkl_file):
 
     if args.feature_extraction == "BoW":
         en_stops = set(stopwords.words("english"))
-        feature_extraction = fx.BagOfWords(lowercase=True, strip_accents=False, on="text", stop_words=en_stops)
+        feature_extraction = fx.BagOfWords(
+            lowercase=True, strip_accents=False, on="text", stop_words=en_stops
+        )
     else:
         feature_extraction = fx.TFIDF(lowercase=True, strip_accents=False, on="text")
 
@@ -74,16 +76,20 @@ def classify(args, files, model_pkl_file):
             bootstrap_sampling=False,
             drift_detector=drift.binary.DDM(),
             nominal_attributes=["category"],
-            seed=0
+            seed=0,
         )
     else:
-        classifier = tree.HoeffdingTreeClassifier(grace_period=float(os.getenv("GRACE_PERIOD")), delta=float(os.getenv("DELTA")),
-                                                split_criterion=os.getenv("SPLIT_CRITERION"), max_depth=1000,
-                                                nominal_attributes=["category"])
+        classifier = tree.HoeffdingTreeClassifier(
+            grace_period=float(os.getenv("GRACE_PERIOD")),
+            delta=float(os.getenv("DELTA")),
+            split_criterion=os.getenv("SPLIT_CRITERION"),
+            max_depth=1000,
+            nominal_attributes=["category"],
+        )
 
     pipeline_original = compose.Pipeline(
-            ("feature_extraction", feature_extraction),
-            ("classifier", classifier))
+        ("feature_extraction", feature_extraction), ("classifier", classifier)
+    )
 
     for file in files:
         start_time = time.time()
@@ -98,11 +104,19 @@ def classify(args, files, model_pkl_file):
         for xi, yi in stream.iter_pandas(docs, target):
             # Preprocess the current instance
             if args.text == "title":
-                text_no_punct = str(xi["title"]).translate(str.maketrans("", "", string.punctuation))
+                text_no_punct = str(xi["title"]).translate(
+                    str.maketrans("", "", string.punctuation)
+                )
             elif args.text == "abstract":
-                text_no_punct = str(xi["abstract"]).translate(str.maketrans("", "", string.punctuation))
+                text_no_punct = str(xi["abstract"]).translate(
+                    str.maketrans("", "", string.punctuation)
+                )
             else:
-                text_no_punct = str(xi["title"]).translate(str.maketrans("", "", string.punctuation)) + str(xi["abstract"]).translate(str.maketrans("", "", string.punctuation))
+                text_no_punct = str(xi["title"]).translate(
+                    str.maketrans("", "", string.punctuation)
+                    ) + str(xi["abstract"]).translate(
+                        str.maketrans("", "", string.punctuation)
+                    )
             word_tokens = word_tokenize(text_no_punct)
             text = []
             for word in word_tokens:
@@ -213,7 +227,7 @@ def classify(args, files, model_pkl_file):
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/tree/"
-            + os.path.splitext(os.path.basename(file))[0]
+            + os.path.splitext(os.path.basename(file))[0],
         )
 
         # create plot
