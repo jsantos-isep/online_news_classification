@@ -21,7 +21,7 @@ def extract_integer(filename):
 def main():
     args = functions.setup_functions.get_arg_parser_merge().parse_args()
     start_time = functions.setup_functions.initialize("merge_files_" + args.dataset)
-    input_dir = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir) 
+    input_dir = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir)
     lines = []
     for filename in realsorted(os.listdir(input_dir)):
         if filename.endswith(".csv"):
