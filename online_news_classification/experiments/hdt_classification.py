@@ -176,10 +176,34 @@ def classify(args, files, model_pkl_file):
             pipeline_original["classifier"].learn_one(transformed_doc, yi)
             index += 1
 
-        summary_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.results_dir + "/summary/" + os.path.splitext(os.path.basename(file))[0])
-        plot_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.results_dir + "/plot/" + os.path.splitext(os.path.basename(file))[0])
-        plot_aux_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.results_dir + "/plot_aux/" + os.path.splitext(os.path.basename(file))[0])
-        tree_file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.results_dir + "/tree/" + os.path.splitext(os.path.basename(file))[0])
+        summary_file = os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER")
+            + args.results_dir
+            + "/summary/"
+            + os.path.splitext(os.path.basename(file))[0]
+        )
+        plot_file = os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER")
+            + args.results_dir
+            + "/plot/"
+            + os.path.splitext(os.path.basename(file))[0]
+        )
+        plot_aux_file = os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER")
+            + args.results_dir
+            + "/plot_aux/"
+            + os.path.splitext(os.path.basename(file))[0]
+        )
+        tree_file = os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER")
+            + args.results_dir
+            + "/tree/"
+            + os.path.splitext(os.path.basename(file))[0]
+        )
       
         # create plot
         fig, ax = plt.subplots(figsize=(40, 20))
@@ -219,7 +243,7 @@ def classify(args, files, model_pkl_file):
             + args.dataset_type
             + "_summary.csv",
             "w",
-            newline=""
+            newline="",
         ) as f:
             writer = csv.writer(f, delimiter=";")
             writer.writerow(
@@ -232,7 +256,16 @@ def classify(args, files, model_pkl_file):
                     "summary"
                 ]
             )
-            writer.writerow([index, dataset["category"].nunique(), metric.get().real, (time.time() - start_time), len(drifts), pipeline_original["classifier"].summary])
+            writer.writerow(
+                [
+                    index,
+                    dataset["category"].nunique(),
+                    metric.get().real,
+                    (time.time() - start_time),
+                    len(drifts),
+                    pipeline_original["classifier"].summary
+                ]
+            )
             f.close()
 
         # create plot aux
@@ -250,17 +283,17 @@ def classify(args, files, model_pkl_file):
             + "_"
             + args.dataset_type
             + "_plot_aux.csv",
-            index=False
+            index=False,
         )
 
         # with open(plot_aux_file +"_" + str(args.capitalization) + "_" + args.classification_type
         #             + "_" + args.feature_extraction + "_" + args.text  + "_plot_aux.csv", "w", newline="") as f:
-            
+
         #     writer = csv.writer(f, delimiter=";")
         #     writer.writerow(["preq", "preq_a", "preq_w"])
         #     writer.writerow([preq, preq_a, preq_w])
         #     f.close()
-        
+
         with open(
             plot_aux_file
             + "_"
