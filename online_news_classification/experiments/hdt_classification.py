@@ -382,9 +382,7 @@ def classify(args, files, model_pkl_file):
 
 
 def main():
-    args = (
-        functions.setup_functions.get_arg_parser_hdt_classification().parse_args()
-    )
+    args = functions.setup_functions.get_arg_parser_hdt_classification().parse_args()
     start_time = functions.setup_functions.initialize(
         "new_experiment_" + str(args.capitalization) + "_" + args.dataset
     )
