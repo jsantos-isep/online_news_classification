@@ -24,7 +24,7 @@ def main():
         "abstract",
         "url",
         "title_entities",
-        "abstract_entities"
+        "abstract_entities",
     ]
     dataset = manage_datasets_functions.read_table_dataset(
         filename=args.input, columns=columns
