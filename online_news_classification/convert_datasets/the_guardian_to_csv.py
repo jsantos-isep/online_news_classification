@@ -1,15 +1,14 @@
 import os
 
+import news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
-from news_classification_lib.functions import manage_datasets_functions
-from news_classification_lib.functions import setup_functions
 
 load_dotenv()
 
 
 def convert(f, args, output_file):
-    dataset = manage_datasets_functions.read_json_dataset(filename=f)
+    dataset = functions.manage_datasets_functions.read_json_dataset(filename=f)
     data = pd.json_normalize(dataset["results"][0], max_level=1)
     data["title"] = data["fields.headline"]
     data["abstract"] = data["fields.trailText"]
@@ -42,12 +41,12 @@ def convert(f, args, output_file):
 
     data = data.drop(["tags"], axis=1)
 
-    manage_datasets_functions.save_dataset(data, output_file + ".csv")
+    functions.manage_datasets_functions.save_dataset(data, output_file + ".csv")
 
 
 def main():
-    args = setup_functions.get_arg_parser_to_csv().parse_args()
-    start_time = setup_functions.initialize("the_guardian_to_csv")
+    args = functions.setup_functions.get_arg_parser_to_csv().parse_args()
+    start_time = functions.setup_functions.initialize("the_guardian_to_csv")
     if args.convert_mode == "folder":
         in_directory = os.path.join(
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input
@@ -61,7 +60,7 @@ def main():
         filename = os.path.basename(args.input)
         output_file = os.path.join(args.output, os.path.splitext(filename)[0])
         convert(args.input, args, output_file)
-    setup_functions.finalize(start_time)
+    functions.setup_functions.finalize(start_time)
 
 
 if __name__ == "__main__":
