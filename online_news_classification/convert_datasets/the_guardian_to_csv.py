@@ -39,7 +39,9 @@ def main():
     args = setup_functions.get_arg_parser_to_csv().parse_args()
     start_time = setup_functions.initialize("the_guardian_to_csv")
     if args.convert_mode == "folder":
-        in_directory = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input)
+        in_directory = os.path.join(
+            os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input
+        )
         for filename in sorted(os.listdir(in_directory)):
             if filename.endswith(".json"):
                 f = os.path.join(args.input, filename)
