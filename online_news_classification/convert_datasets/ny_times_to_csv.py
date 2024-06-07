@@ -45,7 +45,7 @@ def convert(f, args, output_file):
             "headline.sub",
             "byline.original",
             "byline.organization",
-            "_id"
+            "_id",
         ],
         axis=1,
     )

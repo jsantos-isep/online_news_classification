@@ -30,7 +30,7 @@ def convert(f, args, output_file):
 
     data = data.drop(["tags"], axis=1)
 
-    manage_datasets_functions.save_dataset(data, output_file+ ".csv")
+    manage_datasets_functions.save_dataset(data, output_file + ".csv")
 
 
 def main():
