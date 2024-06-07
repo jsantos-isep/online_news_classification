@@ -1,0 +1,49 @@
+name: Commit pipeline
+on: push
+jobs:
+  check-secrets:
+    name: Checking for Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Secret Scanner
+        uses: secret-scanner/action@0.2.1
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+        with:
+          version: 23.12.0
+
+  flake8-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - uses: py-actions/flake8@v2
+        with:
+          ignore: "E203,W503"
+          max-line-length: "88"
+          path: "./online_news_classification_lib"
+
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+      - uses: isort/isort-action@master
+        with:
+          isortVersion: 5.13.2

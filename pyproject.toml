@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "online-news-classification"
+version = "0.1.0"
+description = ""
+authors = ["Joana Santos <ffs@isep.ipp.pt>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
