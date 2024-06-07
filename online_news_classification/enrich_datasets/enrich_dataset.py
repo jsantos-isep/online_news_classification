@@ -32,7 +32,7 @@ def enrich(filename):
         start_time,
         refined,
         nlp,
-        stop_words
+        stop_words,
     ) = functions.setup_functions.initilize_with_models(
         "enrich_"
         + str(args.capitalization)
@@ -41,7 +41,7 @@ def enrich(filename):
     )
     logging.info(filename)
     output_file = (
-        args.output_dir 
+        args.output_dir
         + "enriched_"
         + str(args.capitalization)
         + "_"
@@ -60,14 +60,14 @@ def enrich(filename):
         option=args.capitalization,
         refined=refined,
         nlp=nlp,
-        stop_words=stop_words
+        stop_words=stop_words,
     )
     dataset = dataset.drop(["Unnamed: 0"], axis=1)
     logging.info(
         os.path.join(
             os.getcwd(),
             os.getenv("DATASETS_FOLDER")
-            + os.path.join(args.tmp_dir, os.path.basename(filename))
+            + os.path.join(args.tmp_dir, os.path.basename(filename)),
         )
     )
     logging.info(os.path.join(args.output_dir, os.path.basename(filename)))
