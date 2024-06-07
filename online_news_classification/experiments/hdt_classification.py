@@ -247,9 +247,11 @@ def classify(args, files, model_pkl_file):
 
 
 def main():
-    args = functions.setup_functions.get_arg_parser_ner_semantic_classification().parse_args()
+    args = (
+        functions.setup_functions.get_arg_parser_ner_semantic_classification().parse_args()
+    )
     start_time = functions.setup_functions.initialize(
-        "new_experiment_" + str(args.capitalization)+"_"+args.dataset
+        "new_experiment_" + str(args.capitalization) + "_" + args.dataset
     )
     in_directory = os.path.join(
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
@@ -257,7 +259,7 @@ def main():
     tmp_directory = os.path.join(
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
     )
-    if (args.dataset_format == "file"):
+    if args.dataset_format == "file":
         files_copy = realsorted(glob.glob(in_directory + "*.csv"))
         # logging.info(files_copy)
         for file in files_copy:
@@ -283,7 +285,7 @@ def main():
         + args.feature_extraction
         + "_"
         + args.text
-        + ".pkl"
+        + ".pkl",
     )
     classify(args, files, model_pkl_file)
 
