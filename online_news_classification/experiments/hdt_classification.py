@@ -114,9 +114,9 @@ def classify(args, files, model_pkl_file):
             else:
                 text_no_punct = str(xi["title"]).translate(
                     str.maketrans("", "", string.punctuation)
-                    ) + str(xi["abstract"]).translate(
-                        str.maketrans("", "", string.punctuation)
-                    )
+                ) + str(xi["abstract"]).translate(
+                    str.maketrans("", "", string.punctuation)
+                )
             word_tokens = word_tokenize(text_no_punct)
             text = []
             for word in word_tokens:
