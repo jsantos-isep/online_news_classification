@@ -25,7 +25,14 @@ def main():
 
     while current_year <= now_year:
         if current_month <= 12:
-            API_URL = "https://api.nytimes.com/svc/archive/v1/"+str(current_year) + "/" + str(current_month) + ".json?api-key=" + API_KEY
+            API_URL = (
+                "https://api.nytimes.com/svc/archive/v1/"
+                + str(current_year)
+                + "/"
+                + str(current_month)
+                + ".json?api-key="
+                + API_KEY
+            )
             logging.info(API_URL)
             response = requests.get(API_URL)
             logging.info(response.status_code)

@@ -93,7 +93,7 @@ def classify(args, files, model_pkl_file):
 
         target = dataset["category"]
         docs = dataset.drop(["category"], axis=1)
-       
+
         # Perform the online classification loop
         for xi, yi in stream.iter_pandas(docs, target):
             # Preprocess the current instance
@@ -121,16 +121,22 @@ def classify(args, files, model_pkl_file):
                 elif args.text == "abstract":
                     xi["text"] = xi["abstract_entities"]
                 else:
-                    xi["text"] = xi["title_entities"] + xi["abstract_entities"]   
+                    xi["text"] = xi["title_entities"] + xi["abstract_entities"]
             else:
                 if args.text == "title":
                     xi["title_entities"] = ast.literal_eval(xi["title_entities"])
-                    entities = " ".join([ sub for sub in xi["title_entities"] ])
+                    entities = " ".join([sub for sub in xi["title_entities"]])
                     xi["text"] = stemming + " " + entities
                 elif args.text == "abstract":
                     xi["text"] = stemming + xi["abstract_entities"]
                 else:
-                    xi["text"] = stemming + " " + xi["title_entities"] + " " + xi["abstract_entities"]   
+                    xi["text"] = (
+                        stemming
+                        + " "
+                        + xi["title_entities"]
+                        + " "
+                        + xi["abstract_entities"]
+                    )
 
             logging.info(xi["text"])
             pipeline_original["feature_extraction"].learn_one(xi)
@@ -169,7 +175,12 @@ def classify(args, files, model_pkl_file):
 
             _ = detector.update(val)
             if detector.drift_detected:
-                logging.info("Change detected at index %s, input value: %s, predict value %s", index, yi, y_pred)
+                logging.info(
+                    "Change detected at index %s, input value: %s, predict value %s",
+                    index,
+                    yi,
+                    y_pred,
+                )
                 drifts.append({"index": index, "input": yi, "predict": y_pred})
 
             # Update the classifier with the preprocessed features and the true label
@@ -181,21 +192,21 @@ def classify(args, files, model_pkl_file):
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/summary/"
-            + os.path.splitext(os.path.basename(file))[0]
+            + os.path.splitext(os.path.basename(file))[0],
         )
         plot_file = os.path.join(
             os.getcwd(),
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/plot/"
-            + os.path.splitext(os.path.basename(file))[0]
+            + os.path.splitext(os.path.basename(file))[0],
         )
         plot_aux_file = os.path.join(
             os.getcwd(),
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/plot_aux/"
-            + os.path.splitext(os.path.basename(file))[0]
+            + os.path.splitext(os.path.basename(file))[0],
         )
         tree_file = os.path.join(
             os.getcwd(),
@@ -204,7 +215,7 @@ def classify(args, files, model_pkl_file):
             + "/tree/"
             + os.path.splitext(os.path.basename(file))[0]
         )
-      
+
         # create plot
         fig, ax = plt.subplots(figsize=(40, 20))
         ax.plot(range(index), preq, label="Prequential")
@@ -253,7 +264,7 @@ def classify(args, files, model_pkl_file):
                     "mean_accuracy",
                     "time",
                     "drifts",
-                    "summary"
+                    "summary",
                 ]
             )
             writer.writerow(
@@ -263,7 +274,7 @@ def classify(args, files, model_pkl_file):
                     metric.get().real,
                     (time.time() - start_time),
                     len(drifts),
-                    pipeline_original["classifier"].summary
+                    pipeline_original["classifier"].summary,
                 ]
             )
             f.close()
@@ -286,8 +297,20 @@ def classify(args, files, model_pkl_file):
             index=False,
         )
 
-        # with open(plot_aux_file +"_" + str(args.capitalization) + "_" + args.classification_type
-        #             + "_" + args.feature_extraction + "_" + args.text  + "_plot_aux.csv", "w", newline="") as f:
+        # with open(
+        # plot_aux_file
+        # + "_"
+        # + str(args.capitalization)
+        # + "_"
+        # + args.classification_type
+        # + "_"
+        # + args.feature_extraction
+        # + "_"
+        # + args.text
+        # + "_plot_aux.csv",
+        # "w",
+        # newline=""
+        # ) as f:
 
         #     writer = csv.writer(f, delimiter=";")
         #     writer.writerow(["preq", "preq_a", "preq_w"])
@@ -392,6 +415,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-

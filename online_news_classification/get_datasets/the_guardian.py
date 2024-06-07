@@ -1,18 +1,18 @@
 import json
 import logging
 import os
-import sys
-import time
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 import news_classification_lib.functions as functions
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-    
+
 if __name__ == "__main__":
-    args = functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
+    args = (
+        functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
+    )
     start_time = functions.setup_functions.initialize("get_dataset")
     ORDER_BY = "newest"
     API_KEY = os.getenv("THE_GUARDIAN_API_KEY")
@@ -22,7 +22,14 @@ if __name__ == "__main__":
     while current_date <= end_date:
         initial_date = current_date
         next_date = current_date + delta
-        API_URL = os.getenv("THE_GUARDIAN_BASE_API_URL") + "&from-date=" + str(initial_date.strftime("%Y-%m-%d")) + "&to-date=" + str(next_date.strftime("%Y-%m-%d")) + "&order-by=" + ORDER_BY + "&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
+        API_URL = os.getenv("THE_GUARDIAN_BASE_API_URL")
+        + "&from-date="
+        + str(initial_date.strftime("%Y-%m-%d"))
+        + "&to-date="
+        + str(next_date.strftime("%Y-%m-%d"))
+        + "&order-by="
+        + ORDER_BY
+        + "&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
         response = requests.get(API_URL)
         logging.info(response.status_code)
         final_results = []
@@ -30,7 +37,18 @@ if __name__ == "__main__":
             number_of_pages = response.json()["response"]["pages"]
             logging.info(number_of_pages)
             for page in range(number_of_pages):
-                url = os.getenv("THE_GUARDIAN_BASE_API_URL") + "&from-date=" + str(initial_date.strftime("%Y-%m-%d")) + "&to-date=" + str(next_date.strftime("%Y-%m-%d")) + "&order-by=" + ORDER_BY + "&page-size=50&page="+str(page) + "&show-fields=trailText%2Cheadline&show-tags=keyword"
+                url = (
+                    os.getenv("THE_GUARDIAN_BASE_API_URL")
+                    + "&from-date="
+                    + str(initial_date.strftime("%Y-%m-%d"))
+                    + "&to-date="
+                    + str(next_date.strftime("%Y-%m-%d"))
+                    + "&order-by="
+                    + ORDER_BY
+                    + "&page-size=50&page="
+                    + str(page)
+                    + "&show-fields=trailText%2Cheadline&show-tags=keyword"
+                )
                 page_response = requests.get(url)
                 logging.info(page_response)
                 if page_response.status_code == 200:
@@ -42,7 +60,14 @@ if __name__ == "__main__":
             isExist = os.path.exists(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
             if not isExist:
                 os.makedirs(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
-            with open(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL") + "the_guardian_"+str(initial_date.strftime("%Y-%m-%d"))+str(next_date.strftime("%Y-%m-%d"))+".json", "w") as outfile:
+            with open(
+                os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL")
+                + "the_guardian_"
+                + str(initial_date.strftime("%Y-%m-%d"))
+                + str(next_date.strftime("%Y-%m-%d"))
+                + ".json",
+                "w",
+            ) as outfile:
                 outfile.write(json_string)
         current_date = next_date + timedelta(days=1)
     functions.setup_functions.finalize(start_time)
