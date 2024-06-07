@@ -28,17 +28,48 @@ def get_key(fp):
 
 def enrich(filename):
     args = functions.setup_functions.get_arg_parser_enrich().parse_args()
-    start_time, refined, nlp, stop_words = functions.setup_functions.initilize_with_models("enrich_"+str(args.capitalization)+"_"+os.path.splitext(os.path.basename(filename))[0])
+    (
+        start_time,
+        refined,
+        nlp,
+        stop_words
+    ) = functions.setup_functions.initilize_with_models(
+        "enrich_"
+        + str(args.capitalization)
+        + "_"
+        + os.path.splitext(os.path.basename(filename))[0]
+    )
     logging.info(filename)
-    output_file = args.output_dir + "enriched_"+str(args.capitalization)+"_"+os.path.splitext(os.path.basename(filename))[0]+".csv"
+    output_file = (
+        args.output_dir 
+        + "enriched_"
+        + str(args.capitalization)
+        + "_"
+        + os.path.splitext(os.path.basename(filename))[0]
+        + ".csv"
+    )
     logging.info(output_file)
-    dataset = functions.manage_datasets_functions.read_csv_dataset(filename=filename, separator=";")
+    dataset = functions.manage_datasets_functions.read_csv_dataset(
+        filename=filename, separator=";"
+    )
     dataset["title_entities"] = pd.Series(dtype="object")
     dataset["abstract_entities"] = pd.Series(dtype="object")
     dataset["entities"] = pd.Series(dtype="object")
-    dataset = functions.enrich_functions.enrich(dataset=dataset, option=args.capitalization, refined=refined, nlp=nlp, stop_words=stop_words)
+    dataset = functions.enrich_functions.enrich(
+        dataset=dataset,
+        option=args.capitalization,
+        refined=refined,
+        nlp=nlp,
+        stop_words=stop_words
+    )
     dataset = dataset.drop(["Unnamed: 0"], axis=1)
-    logging.info(os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + os.path.join(args.tmp_dir, os.path.basename(filename))))
+    logging.info(
+        os.path.join(
+            os.getcwd(),
+            os.getenv("DATASETS_FOLDER")
+            + os.path.join(args.tmp_dir, os.path.basename(filename))
+        )
+    )
     logging.info(os.path.join(args.output_dir, os.path.basename(filename)))
     try:
         functions.manage_datasets_functions.save_dataset(dataset, output_file)
@@ -47,7 +78,7 @@ def enrich(filename):
                 os.path.join(
                     os.getcwd(),
                     os.getenv("DATASETS_FOLDER")
-                    + os.path.join(args.tmp_dir, os.path.basename(filename))
+                    + os.path.join(args.tmp_dir, os.path.basename(filename)),
                 )
             )
     except OSError:
@@ -62,8 +93,7 @@ def main():
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
         )
         tmp_directory = os.path.join(
-            os.getcwd(),
-            os.getenv("DATASETS_FOLDER") + args.tmp_dir
+            os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
         )
         if args.dataset_format == "file":
             files_copy = sorted(glob.glob(in_directory + "*.csv"), key=get_key)
