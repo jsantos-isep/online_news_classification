@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from news_classification_lib.functions import (
     enrich_functions,
     manage_datasets_functions,
-    setup_functions
+    setup_functions,
 )
 
 load_dotenv()
