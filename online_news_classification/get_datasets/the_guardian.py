@@ -10,9 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 if __name__ == "__main__":
-    args = (
-        functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
-    )
+    args = functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
     start_time = functions.setup_functions.initialize("get_dataset")
     ORDER_BY = "newest"
     API_KEY = os.getenv("THE_GUARDIAN_API_KEY")
@@ -23,13 +21,13 @@ if __name__ == "__main__":
         initial_date = current_date
         next_date = current_date + delta
         API_URL = os.getenv("THE_GUARDIAN_BASE_API_URL")
-        + "&from-date="
-        + str(initial_date.strftime("%Y-%m-%d"))
-        + "&to-date="
-        + str(next_date.strftime("%Y-%m-%d"))
-        + "&order-by="
-        + ORDER_BY
-        + "&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
+        +"&from-date="
+        +str(initial_date.strftime("%Y-%m-%d"))
+        +"&to-date="
+        +str(next_date.strftime("%Y-%m-%d"))
+        +"&order-by="
+        +ORDER_BY
+        +"&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
         response = requests.get(API_URL)
         logging.info(response.status_code)
         final_results = []
