@@ -2,8 +2,7 @@ import logging
 import time
 
 from dotenv import load_dotenv
-
-from online_news_classification.lib.functions import manage_datasets, setup
+from lib.functions import manage_datasets, setup
 
 load_dotenv()
 

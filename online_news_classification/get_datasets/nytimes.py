@@ -6,8 +6,7 @@ from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
-
-from online_news_classification.lib.functions import logs_config, setup
+from lib.functions import logs_config, setup
 
 load_dotenv()
 
