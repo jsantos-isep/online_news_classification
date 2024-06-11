@@ -10,4 +10,5 @@ requests~=2.26.0
 gnews~=0.2.7
 scikit-learn~=1.2.2
 wikidataintegrator~=0.9.30
-online_news-classification-lib=0.1.0
+online_news-classification-lib~=0.1.0
+python-dotenv~=1.0.1
