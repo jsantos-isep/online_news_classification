@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/jsantos-isep/online_news_classification/compare/v1.0.0...v1.0.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* update the guardian ([c60f22c](https://github.com/jsantos-isep/online_news_classification/commit/c60f22c5f0fd000c70e5e8335d5bede29e12d4f4))
+
 ## 1.0.0 (2024-06-07)
 
 
