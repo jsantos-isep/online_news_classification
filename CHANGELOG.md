@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.0.3...v1.1.0) (2024-06-11)
+
+
+### Features
+
+* Insert lib functions ([a886b0e](https://github.com/jsantos-isep/online_news_classification/commit/a886b0ebd11375d1cb4d2679f691461d4344afb3))
+
+
+### Bug Fixes
+
+* import ([57e636e](https://github.com/jsantos-isep/online_news_classification/commit/57e636ee8b129ef2bd0084df88f6f116197cf0ae))
+* imports ([a91449c](https://github.com/jsantos-isep/online_news_classification/commit/a91449c05fa246ab489ae33be09682c65fee068b))
+
 ## [1.0.3](https://github.com/jsantos-isep/online_news_classification/compare/v1.0.2...v1.0.3) (2024-06-11)
 
 
