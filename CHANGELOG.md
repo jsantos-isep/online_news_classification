@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/jsantos-isep/online_news_classification/compare/v1.0.1...v1.0.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* requirements.txt ([d5df928](https://github.com/jsantos-isep/online_news_classification/commit/d5df9286456fc7b0b2c026434357f0c071402b03))
+
 ## [1.0.1](https://github.com/jsantos-isep/online_news_classification/compare/v1.0.0...v1.0.1) (2024-06-11)
 
 
