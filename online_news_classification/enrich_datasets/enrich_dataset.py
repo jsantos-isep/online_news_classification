@@ -5,7 +5,7 @@ import shutil
 import time
 from multiprocessing import Pool
 
-import news_classification_lib.functions as functions
+import online_news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
 from send2trash import send2trash

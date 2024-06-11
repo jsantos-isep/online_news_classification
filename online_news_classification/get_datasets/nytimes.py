@@ -4,7 +4,7 @@ import os
 import time
 from datetime import datetime
 
-import news_classification_lib.functions as functions
+import online_news_classification_lib.functions as functions
 import requests
 from dotenv import load_dotenv
 

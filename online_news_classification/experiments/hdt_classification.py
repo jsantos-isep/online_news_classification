@@ -9,7 +9,7 @@ import string
 import time
 
 import matplotlib.pyplot as plt
-import news_classification_lib.functions as functions
+import online_news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
 from natsort import natsorted, realsorted

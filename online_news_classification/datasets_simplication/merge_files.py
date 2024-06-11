@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-import news_classification_lib.functions as functions
+import online_news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
 from natsort import realsorted

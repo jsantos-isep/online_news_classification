@@ -1,7 +1,7 @@
 import logging
 import time
 
-import news_classification_lib.functions as functions
+import online_news_classification_lib.functions as functions
 from dotenv import load_dotenv
 
 load_dotenv()
