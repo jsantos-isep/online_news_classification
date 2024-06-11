@@ -7,9 +7,8 @@ from multiprocessing import Pool
 
 import pandas as pd
 from dotenv import load_dotenv
+from lib.functions import enrich, manage_datasets, setup
 from send2trash import send2trash
-
-from online_news_classification.lib.functions import enrich, manage_datasets, setup
 
 load_dotenv()
 
