@@ -5,14 +5,15 @@ from datetime import datetime, timedelta
 
 import requests
 from dotenv import load_dotenv
-from lib.functions import setup_functions
+
+from online_news_classification.lib.functions import setup
 
 load_dotenv()
 
 
 def main():
-    args = setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
-    start_time = setup_functions.initialize("get_dataset")
+    args = setup.get_arg_parser_get_dataset_from_api().parse_args()
+    start_time = setup.initialize("get_dataset")
     ORDER_BY = "newest"
     delta = timedelta(days=10)
     current_date = datetime.strptime(args.start_date, "%Y-%m-%d")
@@ -68,7 +69,7 @@ def main():
             ) as outfile:
                 outfile.write(json_string)
         current_date = next_date + timedelta(days=1)
-    setup_functions.finalize(start_time)
+    setup.finalize(start_time)
 
 
 if __name__ == "__main__":

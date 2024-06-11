@@ -4,14 +4,15 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import setup_functions
+
+from online_news_classification.lib.functions import setup
 
 load_dotenv()
 
 
 def main():
-    args = setup_functions.get_arg_parser_split().parse_args()
-    start_time = setup_functions.initialize("split_file_" + args.dataset)
+    args = setup.get_arg_parser_split().parse_args()
+    start_time = setup.initialize("split_file_" + args.dataset)
     input_file = os.path.join(
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_file
     )

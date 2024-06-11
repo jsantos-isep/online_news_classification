@@ -3,17 +3,16 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import manage_datasets_functions, setup_functions
+
+from online_news_classification.lib.functions import manage_datasets, setup
 
 load_dotenv()
 
 
 def main():
-    args = setup_functions.get_arg_parser_to_csv().parse_args()
-    start_time = setup_functions.initialize("cnn_to_csv")
-    dataset = manage_datasets_functions.read_csv_dataset(
-        filename=args.input, separator=","
-    )
+    args = setup.get_arg_parser_to_csv().parse_args()
+    start_time = setup.initialize("cnn_to_csv")
+    dataset = manage_datasets.read_csv_dataset(filename=args.input, separator=",")
     dataset = dataset[dataset["Headline"] != ""]
     dataset = dataset[dataset["Description"] != ""]
     dataset["title"] = dataset["Headline"]
@@ -37,7 +36,7 @@ def main():
         ],
         axis=1,
     )
-    manage_datasets_functions.save_dataset(dataset, args.output)
+    manage_datasets.save_dataset(dataset, args.output)
     logging.info("--- %s seconds ---" % (time.time() - start_time))
 
 

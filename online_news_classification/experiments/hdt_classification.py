@@ -11,7 +11,6 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import manage_datasets_functions, setup_functions
 from natsort import natsorted, realsorted
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -20,6 +19,8 @@ from river import compose, drift
 from river import feature_extraction as fx
 from river import metrics, stream, tree
 from send2trash import send2trash
+
+from online_news_classification.lib.functions import manage_datasets, setup
 
 load_dotenv()
 
@@ -93,7 +94,7 @@ def classify(args, files, model_pkl_file):
 
     for file in files:
         start_time = time.time()
-        dataset = manage_datasets_functions.load_dataset_classify(file)
+        dataset = manage_datasets.load_dataset_classify(file)
         dataset["title_stemmed"] = pd.Series(dtype="string")
         dataset["text"] = pd.Series(dtype="string")
 
@@ -382,8 +383,8 @@ def classify(args, files, model_pkl_file):
 
 
 def main():
-    args = setup_functions.get_arg_parser_hdt_classification().parse_args()
-    start_time = setup_functions.initialize(
+    args = setup.get_arg_parser_hdt_classification().parse_args()
+    start_time = setup.initialize(
         "new_experiment_" + str(args.capitalization) + "_" + args.dataset
     )
     in_directory = os.path.join(

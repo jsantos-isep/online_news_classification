@@ -7,8 +7,9 @@ from multiprocessing import Pool
 
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import enrich_functions, manage_datasets_functions, setup_functions
 from send2trash import send2trash
+
+from online_news_classification.lib.functions import enrich, manage_datasets, setup
 
 load_dotenv()
 
@@ -26,14 +27,14 @@ def get_key(fp):
     return int(int_part)
 
 
-def enrich(filename):
-    args = setup_functions.get_arg_parser_enrich().parse_args()
+def enrich_dataset(filename):
+    args = setup.get_arg_parser_enrich().parse_args()
     (
         start_time,
         refined,
         nlp,
         stop_words,
-    ) = setup_functions.initilize_with_models(
+    ) = setup.initilize_with_models(
         "enrich_"
         + str(args.capitalization)
         + "_"
@@ -49,13 +50,11 @@ def enrich(filename):
         + ".csv"
     )
     logging.info(output_file)
-    dataset = manage_datasets_functions.read_csv_dataset(
-        filename=filename, separator=";"
-    )
+    dataset = manage_datasets.read_csv_dataset(filename=filename, separator=";")
     dataset["title_entities"] = pd.Series(dtype="object")
     dataset["abstract_entities"] = pd.Series(dtype="object")
     dataset["entities"] = pd.Series(dtype="object")
-    dataset = enrich_functions.enrich(
+    dataset = enrich.enrich(
         dataset=dataset,
         option=args.capitalization,
         refined=refined,
@@ -72,7 +71,7 @@ def enrich(filename):
     )
     logging.info(os.path.join(args.output_dir, os.path.basename(filename)))
     try:
-        manage_datasets_functions.save_dataset(dataset, output_file)
+        manage_datasets.save_dataset(dataset, output_file)
         if args.enrich_mode == "folder":
             send2trash(
                 os.path.join(
@@ -87,7 +86,7 @@ def enrich(filename):
 
 
 def main():
-    args = setup_functions.get_arg_parser_enrich().parse_args()
+    args = setup.get_arg_parser_enrich().parse_args()
     if args.enrich_mode == "folder":
         in_directory = os.path.join(
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
@@ -108,7 +107,7 @@ def main():
 
         pool = Pool(processes=args.num_processes)
         pool.map(
-            enrich,
+            enrich_dataset,
             [os.path.join(args.tmp_dir, os.path.basename(file)) for file in files],
         )
         pool.close()

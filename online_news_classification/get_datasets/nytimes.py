@@ -6,14 +6,15 @@ from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
-from lib.functions import logging_functions, setup_functions
+
+from online_news_classification.lib.functions import logs_config, setup
 
 load_dotenv()
 
 
 def main():
-    args = setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
-    start_time = setup_functions.initialize("get_dataset")
+    args = setup.get_arg_parser_get_dataset_from_api().parse_args()
+    start_time = setup.initialize("get_dataset")
     API_KEY = os.getenv("NYTIMES_API_KEY")
 
     current_month = args.month
@@ -57,5 +58,5 @@ def main():
 
 
 if __name__ == "__main__":
-    logging_functions.create_log_file("get_dataset_ny_times")
+    logs_config.create_log_file("get_dataset_ny_times")
     main()
