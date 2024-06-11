@@ -5,9 +5,10 @@ import shutil
 import time
 from multiprocessing import Pool
 
-import online_news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
+from lib.functions import (enrich_functions, manage_datasets_functions,
+                           setup_functions)
 from send2trash import send2trash
 
 load_dotenv()
@@ -27,13 +28,13 @@ def get_key(fp):
 
 
 def enrich(filename):
-    args = functions.setup_functions.get_arg_parser_enrich().parse_args()
+    args = setup_functions.get_arg_parser_enrich().parse_args()
     (
         start_time,
         refined,
         nlp,
         stop_words,
-    ) = functions.setup_functions.initilize_with_models(
+    ) = setup_functions.initilize_with_models(
         "enrich_"
         + str(args.capitalization)
         + "_"
@@ -49,13 +50,13 @@ def enrich(filename):
         + ".csv"
     )
     logging.info(output_file)
-    dataset = functions.manage_datasets_functions.read_csv_dataset(
+    dataset = manage_datasets_functions.read_csv_dataset(
         filename=filename, separator=";"
     )
     dataset["title_entities"] = pd.Series(dtype="object")
     dataset["abstract_entities"] = pd.Series(dtype="object")
     dataset["entities"] = pd.Series(dtype="object")
-    dataset = functions.enrich_functions.enrich(
+    dataset = enrich_functions.enrich(
         dataset=dataset,
         option=args.capitalization,
         refined=refined,
@@ -72,7 +73,7 @@ def enrich(filename):
     )
     logging.info(os.path.join(args.output_dir, os.path.basename(filename)))
     try:
-        functions.manage_datasets_functions.save_dataset(dataset, output_file)
+        manage_datasets_functions.save_dataset(dataset, output_file)
         if args.enrich_mode == "folder":
             send2trash(
                 os.path.join(
@@ -87,7 +88,7 @@ def enrich(filename):
 
 
 def main():
-    args = functions.setup_functions.get_arg_parser_enrich().parse_args()
+    args = setup_functions.get_arg_parser_enrich().parse_args()
     if args.enrich_mode == "folder":
         in_directory = os.path.join(
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir

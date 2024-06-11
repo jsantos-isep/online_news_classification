@@ -3,16 +3,16 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-import online_news_classification_lib.functions as functions
 import requests
 from dotenv import load_dotenv
+from lib.functions import setup_functions
 
 load_dotenv()
 
 
 def main():
-    args = functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
-    start_time = functions.setup_functions.initialize("get_dataset")
+    args = setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
+    start_time = setup_functions.initialize("get_dataset")
     ORDER_BY = "newest"
     delta = timedelta(days=10)
     current_date = datetime.strptime(args.start_date, "%Y-%m-%d")
@@ -68,7 +68,7 @@ def main():
             ) as outfile:
                 outfile.write(json_string)
         current_date = next_date + timedelta(days=1)
-    functions.setup_functions.finalize(start_time)
+    setup_functions.finalize(start_time)
 
 
 if __name__ == "__main__":

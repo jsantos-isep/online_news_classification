@@ -12,3 +12,4 @@ scikit-learn~=1.2.2
 wikidataintegrator~=0.9.30
 online_news-classification-lib~=1.1.1
 python-dotenv~=1.0.1
+natsort~=8.4.0

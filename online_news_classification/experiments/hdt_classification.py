@@ -9,9 +9,9 @@ import string
 import time
 
 import matplotlib.pyplot as plt
-import online_news_classification_lib.functions as functions
 import pandas as pd
 from dotenv import load_dotenv
+from lib.functions import manage_datasets_functions, setup_functions
 from natsort import natsorted, realsorted
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -93,7 +93,7 @@ def classify(args, files, model_pkl_file):
 
     for file in files:
         start_time = time.time()
-        dataset = functions.manage_datasets_functions.load_dataset_classify(file)
+        dataset = manage_datasets_functions.load_dataset_classify(file)
         dataset["title_stemmed"] = pd.Series(dtype="string")
         dataset["text"] = pd.Series(dtype="string")
 
@@ -382,8 +382,8 @@ def classify(args, files, model_pkl_file):
 
 
 def main():
-    args = functions.setup_functions.get_arg_parser_hdt_classification().parse_args()
-    start_time = functions.setup_functions.initialize(
+    args = setup_functions.get_arg_parser_hdt_classification().parse_args()
+    start_time = setup_functions.initialize(
         "new_experiment_" + str(args.capitalization) + "_" + args.dataset
     )
     in_directory = os.path.join(

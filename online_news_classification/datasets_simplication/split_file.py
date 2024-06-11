@@ -4,7 +4,7 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
-from online_news_classification_lib.functions import setup_functions
+from lib.functions import setup_functions
 
 load_dotenv()
 
