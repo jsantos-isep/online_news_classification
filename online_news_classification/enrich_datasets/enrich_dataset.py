@@ -7,7 +7,7 @@ from multiprocessing import Pool
 
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import (enrich_functions, manage_datasets_functions, setup_functions)
+from lib.functions import enrich_functions, manage_datasets_functions, setup_functions
 from send2trash import send2trash
 
 load_dotenv()
