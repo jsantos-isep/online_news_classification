@@ -2,7 +2,7 @@ import logging
 import time
 
 from dotenv import load_dotenv
-from lib.functions import manage_datasets, setup
+from functions import manage_datasets, setup
 
 load_dotenv()
 

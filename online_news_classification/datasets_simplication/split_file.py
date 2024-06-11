@@ -4,7 +4,7 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
-from lib.functions import setup
+from functions import setup
 
 load_dotenv()
 

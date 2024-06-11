@@ -6,7 +6,7 @@ from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
-from lib.functions import logs_config, setup
+from functions import logs_config, setup
 
 load_dotenv()
 
