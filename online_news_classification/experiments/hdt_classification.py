@@ -6,11 +6,16 @@ import os
 import pickle
 import shutil
 import string
+import sys
 import time
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from dotenv import load_dotenv
+
+if __name__ == "__main__":
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from functions import manage_datasets, setup
 from natsort import natsorted, realsorted
 from nltk.corpus import stopwords

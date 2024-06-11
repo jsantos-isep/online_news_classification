@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 from nltk.tokenize import word_tokenize
 
-from . import text
+from . import text_clean
 
 load_dotenv()
 
@@ -34,14 +34,14 @@ def enrich(dataset, option, refined, nlp, stop_words):
                 filtered_title = [
                     w
                     for w in word_tokens_title
-                    if not text.truecase(w, only_proper_nouns=False) in stop_words
+                    if not text_clean.truecase(w, only_proper_nouns=False) in stop_words
                 ]
                 row["title"] = " ".join(filtered_title)
                 word_tokens_abstract = word_tokenize(str(row["abstract"]))
                 filtered_abstract = [
                     w
                     for w in word_tokens_abstract
-                    if not text.truecase(w, only_proper_nouns=False) in stop_words
+                    if not text_clean.truecase(w, only_proper_nouns=False) in stop_words
                 ]
                 row["abstract"] = " ".join(filtered_abstract)
                 spans_title = refined.process_text(row["title"])
@@ -52,14 +52,14 @@ def enrich(dataset, option, refined, nlp, stop_words):
                 filtered_title = [
                     w
                     for w in word_tokens_title
-                    if not text.truecase(w, only_proper_nouns=True) in stop_words
+                    if not text_clean.truecase(w, only_proper_nouns=True) in stop_words
                 ]
                 row["title"] = " ".join(filtered_title)
                 word_tokens_abstract = word_tokenize(str(row["abstract"]))
                 filtered_abstract = [
                     w
                     for w in word_tokens_abstract
-                    if not text.truecase(w, only_proper_nouns=True) in stop_words
+                    if not text_clean.truecase(w, only_proper_nouns=True) in stop_words
                 ]
                 row["abstract"] = " ".join(filtered_abstract)
                 spans_title = refined.process_text(row["title"])
