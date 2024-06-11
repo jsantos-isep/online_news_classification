@@ -9,11 +9,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if __name__ == "__main__":
+
+def main():
     args = functions.setup_functions.get_arg_parser_get_dataset_from_api().parse_args()
     start_time = functions.setup_functions.initialize("get_dataset")
     ORDER_BY = "newest"
-    API_KEY = os.getenv("THE_GUARDIAN_API_KEY")
     delta = timedelta(days=10)
     current_date = datetime.strptime(args.start_date, "%Y-%m-%d")
     end_date = datetime.strptime(args.end_date, "%Y-%m-%d")
@@ -69,3 +69,7 @@ if __name__ == "__main__":
                 outfile.write(json_string)
         current_date = next_date + timedelta(days=1)
     functions.setup_functions.finalize(start_time)
+
+
+if __name__ == "__main__":
+    main()
