@@ -1,17 +1,13 @@
 import json
 import logging
 import os
-import sys
 import time
 from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
 
-if __name__ == "__main__":
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from functions import logs_config, setup
+from online_news_classification.functions import logs_config, setup
 
 load_dotenv()
 
