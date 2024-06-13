@@ -1,5 +1,8 @@
-name: Commit pipeline
-on: push
+name: CI for non master branch
+on:
+  push:
+    branches-ignore:
+      - master
 jobs:
   check-secrets:
     name: Checking for Secrets
