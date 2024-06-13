@@ -1,8 +1,7 @@
 name: Publish Pipeline-ai 🐍 distributions 📦 to PyPI
 on:
-  push:
-    tags:
-      - '**'
+  pull_request:
+    types: [closed]
   workflow_dispatch:
 jobs:
   build:
