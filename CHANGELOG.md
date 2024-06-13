@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.4...v1.1.5) (2024-06-13)
+
+
+### Bug Fixes
+
+* functions imports ([e5b0113](https://github.com/jsantos-isep/online_news_classification/commit/e5b0113b1964357fdf41b0b54a28b111ae6afd13))
+
 ## [1.1.4](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.3...v1.1.4) (2024-06-13)
 
 
