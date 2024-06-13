@@ -13,9 +13,11 @@ from online_news_classification.functions import enrich, manage_datasets, setup
 
 load_dotenv()
 
+EXTENSION = "*.csv"
+
 
 def extract_integer(filename):
-    if filename.endswith(".csv"):
+    if filename.endswith(os.getenv("ENRICH_FILE_EXTENSION")):
         return int(filename.split(".")[0].split("_")[1])
     else:
         return -1
@@ -41,13 +43,10 @@ def enrich_dataset(filename):
         + os.path.splitext(os.path.basename(filename))[0]
     )
     logging.info(filename)
+    basename = os.path.splitext(os.path.basename(filename))[0]
+    extension = os.getenv("ENRICH_FILE_EXTENSION")
     output_file = (
-        args.output_dir
-        + "enriched_"
-        + str(args.capitalization)
-        + "_"
-        + os.path.splitext(os.path.basename(filename))[0]
-        + ".csv"
+        f"{args.output_dir}enriched_{str(args.capitalization)}_{basename}{extension}"
     )
     logging.info(output_file)
     dataset = manage_datasets.read_csv_dataset(filename=filename, separator=";")
@@ -95,12 +94,12 @@ def main():
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
         )
         if args.dataset_format == "file":
-            files_copy = sorted(glob.glob(in_directory + "*.csv"), key=get_key)
-            files = sorted(glob.glob(tmp_directory + "*.csv"), key=get_key)
+            files_copy = sorted(glob.glob(in_directory + EXTENSION), key=get_key)
+            files = sorted(glob.glob(tmp_directory + EXTENSION), key=get_key)
 
         else:
-            files_copy = sorted(glob.glob(in_directory + "*.csv"))
-            files = sorted(glob.glob(tmp_directory + "*.csv"))
+            files_copy = sorted(glob.glob(in_directory + EXTENSION))
+            files = sorted(glob.glob(tmp_directory + EXTENSION))
 
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
