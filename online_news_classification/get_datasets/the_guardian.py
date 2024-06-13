@@ -14,21 +14,21 @@ load_dotenv()
 def main():
     args = setup.get_arg_parser_get_dataset_from_api().parse_args()
     start_time = setup.initialize("get_dataset")
+    base_url = os.getenv("THE_GUARDIAN_BASE_API_URL")
     ORDER_BY = "newest"
+    page_size = 50
     delta = timedelta(days=10)
     current_date = datetime.strptime(args.start_date, "%Y-%m-%d")
     end_date = datetime.strptime(args.end_date, "%Y-%m-%d")
     while current_date <= end_date:
         initial_date = current_date
         next_date = current_date + delta
-        API_URL = os.getenv("THE_GUARDIAN_BASE_API_URL")
-        +"&from-date="
-        +str(initial_date.strftime("%Y-%m-%d"))
-        +"&to-date="
-        +str(next_date.strftime("%Y-%m-%d"))
-        +"&order-by="
-        +ORDER_BY
-        +"&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
+        initial_data_str = str(initial_date.strftime("%Y-%m-%d"))
+        next_date_str = str(next_date.strftime("%Y-%m-%d"))
+        API_URL = (
+            f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}&order-by={ORDER_BY}&page-size={page_size}"
+            + "&show-fields=trailText%2Cheadline&show-tags=keyword"
+        )
         response = requests.get(API_URL)
         logging.info(response.status_code)
         final_results = []
@@ -36,17 +36,10 @@ def main():
             number_of_pages = response.json()["response"]["pages"]
             logging.info(number_of_pages)
             for page in range(number_of_pages):
+                page_str = str(page)
                 url = (
-                    os.getenv("THE_GUARDIAN_BASE_API_URL")
-                    + "&from-date="
-                    + str(initial_date.strftime("%Y-%m-%d"))
-                    + "&to-date="
-                    + str(next_date.strftime("%Y-%m-%d"))
-                    + "&order-by="
-                    + ORDER_BY
-                    + "&page-size=50&page="
-                    + str(page)
-                    + "&show-fields=trailText%2Cheadline&show-tags=keyword"
+                    f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}&order-by={ORDER_BY}&page-size={page_size}"
+                    + f"&page={page_str}&show-fields=trailText%2Cheadline&show-tags=keyword"
                 )
                 page_response = requests.get(url)
                 logging.info(page_response)
@@ -60,11 +53,7 @@ def main():
             if not isExist:
                 os.makedirs(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
             with open(
-                os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL")
-                + "the_guardian_"
-                + str(initial_date.strftime("%Y-%m-%d"))
-                + str(next_date.strftime("%Y-%m-%d"))
-                + ".json",
+                f"{base_url}the_guardian_{initial_data_str}{next_date_str}.json",
                 "w",
             ) as outfile:
                 outfile.write(json_string)
