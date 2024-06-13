@@ -1,12 +1,6 @@
 name: SonarCloud Analysis
 
-on:
-    push:
-      branches:
-        - "*"
-      paths:
-        - '**.py'  # ajuste para os tipos de arquivos Python que você deseja analisar
-        
+on: push
         
 jobs:
   sonarcloud:
