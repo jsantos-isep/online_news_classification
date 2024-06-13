@@ -6,7 +6,7 @@ import spacy
 from nltk.corpus import stopwords
 from refined.inference.processor import Refined
 
-from . import logs_config
+from online_news_classification.functions import logs_config
 
 
 def initialize(log_name):

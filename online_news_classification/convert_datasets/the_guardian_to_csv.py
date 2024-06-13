@@ -1,13 +1,9 @@
 import os
-import sys
 
 import pandas as pd
 from dotenv import load_dotenv
 
-if __name__ == "__main__":
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from functions import manage_datasets, setup
+from online_news_classification.functions import manage_datasets, setup
 
 load_dotenv()
 

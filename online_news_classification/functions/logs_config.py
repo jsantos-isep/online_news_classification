@@ -4,7 +4,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 
-load_dotenv("../.env")
+load_dotenv()
 
 
 def create_log_file(name):

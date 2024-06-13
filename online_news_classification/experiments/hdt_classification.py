@@ -6,17 +6,11 @@ import os
 import pickle
 import shutil
 import string
-import sys
 import time
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from dotenv import load_dotenv
-
-if __name__ == "__main__":
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from functions import manage_datasets, setup
 from natsort import natsorted, realsorted
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -25,6 +19,8 @@ from river import compose, drift
 from river import feature_extraction as fx
 from river import metrics, stream, tree
 from send2trash import send2trash
+
+from online_news_classification.functions import manage_datasets, setup
 
 load_dotenv()
 

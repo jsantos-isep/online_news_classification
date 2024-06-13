@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 from nltk.tokenize import word_tokenize
 
-from . import text_clean
+from online_news_classification.functions import text_clean
 
 load_dotenv()
 

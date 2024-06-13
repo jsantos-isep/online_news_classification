@@ -2,18 +2,14 @@ import glob
 import logging
 import os
 import shutil
-import sys
 import time
 from multiprocessing import Pool
 
 import pandas as pd
 from dotenv import load_dotenv
-
-if __name__ == "__main__":
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from functions import enrich, manage_datasets, setup
 from send2trash import send2trash
+
+from online_news_classification.functions import enrich, manage_datasets, setup
 
 load_dotenv()
 
