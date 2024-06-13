@@ -57,6 +57,11 @@ jobs:
           isortVersion: 5.13.2
   release-please:
     runs-on: ubuntu-latest
+    needs:
+      - check-secrets
+      - lint
+      - flake8-lint
+      - isort
     steps:
       - uses: googleapis/release-please-action@v4
         with:
