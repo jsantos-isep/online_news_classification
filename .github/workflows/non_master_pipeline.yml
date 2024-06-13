@@ -1,8 +1,8 @@
-name: CI for non master branch
+name: CI for non main branch
 on:
   push:
     branches-ignore:
-      - master
+      - main
 jobs:
   check-secrets:
     name: Checking for Secrets
