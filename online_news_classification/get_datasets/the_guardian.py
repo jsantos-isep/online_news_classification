@@ -26,7 +26,8 @@ def main():
         initial_data_str = str(initial_date.strftime("%Y-%m-%d"))
         next_date_str = str(next_date.strftime("%Y-%m-%d"))
         API_URL = (
-            f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}&order-by={ORDER_BY}&page-size={page_size}"
+            f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}"
+            + f"&order-by={ORDER_BY}&page-size={page_size}"
             + "&show-fields=trailText%2Cheadline&show-tags=keyword"
         )
         response = requests.get(API_URL)
@@ -38,8 +39,9 @@ def main():
             for page in range(number_of_pages):
                 page_str = str(page)
                 url = (
-                    f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}&order-by={ORDER_BY}&page-size={page_size}"
-                    + f"&page={page_str}&show-fields=trailText%2Cheadline&show-tags=keyword"
+                    f"{base_url}&from-date={initial_data_str}&to-date={next_date_str}"
+                    + f"&order-by={ORDER_BY}&page-size={page_size}&page={page_str}"
+                    + "&show-fields=trailText%2Cheadline&show-tags=keyword"
                 )
                 page_response = requests.get(url)
                 logging.info(page_response)
