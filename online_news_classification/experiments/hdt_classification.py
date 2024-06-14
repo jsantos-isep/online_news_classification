@@ -292,18 +292,8 @@ def classify(args, files, model_pkl_file):
         # create plot aux
         df = pd.DataFrame({"preq": preq, "preq_a": preq_a, "preq_w": preq_w})
         df.to_csv(
-            plot_aux_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_plot_aux.csv",
+            f"{plot_aux_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_{args.dataset_type}_plot_aux.csv",
             index=False,
         )
 
