@@ -8,7 +8,7 @@ from online_news_classification.functions import text_clean
 load_dotenv()
 
 
-def enrich(dataset, option, refined, nlp, stop_words):
+def enrich(dataset, option, refined, stop_words):
     for index, row in dataset.iterrows():
         logging.info("Index = %s", index)
         title_entities = []

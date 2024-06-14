@@ -57,7 +57,6 @@ def enrich_dataset(filename):
         dataset=dataset,
         option=args.capitalization,
         refined=refined,
-        nlp=nlp,
         stop_words=stop_words,
     )
     dataset = dataset.drop(["Unnamed: 0"], axis=1)
