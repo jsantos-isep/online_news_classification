@@ -109,6 +109,39 @@ def remove_punctuation(args, xi):
     return text_no_punct
 
 
+def get_text(args, xi, stemming):
+    # Função auxiliar para obter entidades como string
+    def get_entities(key):
+        if key in xi:
+            return (
+                " ".join(ast.literal_eval(xi[key]))
+                if isinstance(xi[key], str)
+                else xi[key]
+            )
+        return ""
+
+    title_entities = get_entities("title_entities")
+    abstract_entities = get_entities("abstract_entities")
+
+    if args.dataset_type == "original":
+        text = stemming
+    elif args.dataset_type == "enriched":
+        if args.text == "title":
+            text = title_entities
+        elif args.text == "abstract":
+            text = abstract_entities
+        else:
+            text = title_entities + abstract_entities
+    else:
+        if args.text == "title":
+            text = stemming + " " + title_entities
+        elif args.text == "abstract":
+            text = stemming + abstract_entities
+        else:
+            text = stemming + " " + title_entities + " " + abstract_entities
+    return text
+
+
 def classify(args, files, model_pkl_file):
     logging.info("Starting original experiment with: %s", str(args))
     page_hinkley = drift.binary.DDM()
