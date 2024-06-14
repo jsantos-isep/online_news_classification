@@ -8,10 +8,27 @@ from online_news_classification.functions import text_clean
 load_dotenv()
 
 
+def process_span_title(spans_title):
+    title_entities = []
+    for span in spans_title:
+        if span.predicted_entity is not None:
+            if span.predicted_entity.wikidata_entity_id is not None:
+                title_entities.append(span.predicted_entity.wikidata_entity_id)
+    return title_entities
+
+
+def process_span_abstract(spans_abstract):
+    abstract_entities = []
+    for span in spans_abstract:
+        if span.predicted_entity is not None:
+            if span.predicted_entity.wikidata_entity_id is not None:
+                abstract_entities.append(span.predicted_entity.wikidata_entity_id)
+    return abstract_entities
+
+
 def enrich(dataset, option, refined, nlp, stop_words):
     for index, row in dataset.iterrows():
         logging.info("Index = %s", index)
-        title_entities = []
         abstract_entities = []
         match option:
             case 1:
@@ -80,21 +97,9 @@ def enrich(dataset, option, refined, nlp, stop_words):
                 except IndexError:
                     print("Index error.")
                     next
-        for span in spans_title:
-            if span.predicted_entity is not None:
-                if span.predicted_entity.wikidata_entity_id is not None:
-                    title_entities.append(span.predicted_entity.wikidata_entity_id)
-                    text = span.predicted_entity.wikipedia_entity_title
-                    text.replace(",", "")
-        for span in spans_abstract:
-            if span.predicted_entity is not None:
-                if span.predicted_entity.wikidata_entity_id is not None:
-                    abstract_entities.append(span.predicted_entity.wikidata_entity_id)
-                    text = span.predicted_entity.wikipedia_entity_title
-                    text.replace(",", "")
-        dataset.at[index, "title_entities"] = title_entities
+        title_entities = process_span_title(spans_title)
+        abstract_entities = process_span_abstract(spans_abstract)
         dataset.at[index, "title_entities"] = list(title_entities)
-        dataset.at[index, "abstract_entities"] = abstract_entities
         dataset.at[index, "abstract_entities"] = list(abstract_entities)
         dataset.at[index, "entities"] = list(
             set(list(abstract_entities) + list(title_entities))
