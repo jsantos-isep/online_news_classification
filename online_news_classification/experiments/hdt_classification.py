@@ -24,6 +24,8 @@ from online_news_classification.functions import manage_datasets, setup
 
 load_dotenv()
 
+FILE_EXTENSION_SEARCH = "*.csv"
+
 
 def get_key(fp):
     filename = os.path.splitext(os.path.basename(fp))[0]
@@ -347,17 +349,17 @@ def main():
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
     )
     if args.dataset_format == "file":
-        files_copy = realsorted(glob.glob(in_directory + "*.csv"))
+        files_copy = realsorted(glob.glob(in_directory + FILE_EXTENSION_SEARCH))
         # logging.info(files_copy)
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
-        files = realsorted(glob.glob(tmp_directory + "*.csv"))
+        files = realsorted(glob.glob(tmp_directory + FILE_EXTENSION_SEARCH))
     else:
-        files_copy = natsorted(glob.glob(in_directory + "*.csv"))
+        files_copy = natsorted(glob.glob(in_directory + FILE_EXTENSION_SEARCH))
         # logging.info(files_copy)
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
-        files = natsorted(glob.glob(tmp_directory + "*.csv"))
+        files = natsorted(glob.glob(tmp_directory + FILE_EXTENSION_SEARCH))
 
     models_folder = os.getenv("MODELS_FOLDER")
     model_pkl_file = os.path.join(
