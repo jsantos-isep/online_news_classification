@@ -50,7 +50,6 @@ def convert(f, output_file):
         tags = []
         for tag in row["keywords"]:
             tags.append(str(tag["value"]))
-        data.at[index, "final_tags"] = tags
         data.at[index, "final_tags"] = list(tags)
 
     data = data.drop(["keywords"], axis=1)

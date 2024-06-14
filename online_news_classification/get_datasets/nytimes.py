@@ -40,13 +40,10 @@ def main():
                 json_string = json.dumps(
                     {"results": response.json()["response"]["docs"]}
                 )
+                folder = os.getenv("DATASETS_FOLDER_NY_TIMES_ORIGINAL")
                 with open(
-                    os.getenv("DATASETS_FOLDER_NY_TIMES_ORIGINAL")
-                    + "the_ny_times_"
-                    + str(current_year)
-                    + "-"
-                    + str(current_month)
-                    + ".json",
+                    f"{folder}the_ny_times_{str(current_year)}"
+                    + f"_{str(current_month)}.json",
                     "w",
                 ) as outfile:
                     outfile.write(json_string)
