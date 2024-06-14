@@ -34,7 +34,5 @@ jobs:
         with: 
           args: >
             -Dsonar.organization=jsantos-isep \
-            -Dsonar.projectKey=jsantos-isep_online_news_classification \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.projectKey=jsantos-isep_online_news_classification
   
