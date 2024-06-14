@@ -1,12 +1,16 @@
 import argparse
 import logging
+import os
 import time
 
 import spacy
+from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from refined.inference.processor import Refined
 
 from online_news_classification.functions import logs_config
+
+load_dotenv()
 
 
 def initialize(log_name):
@@ -134,7 +138,7 @@ def get_arg_parser_enrich():
     return parser
 
 
-def get_arg_parser_hdt_classification():
+def get_arg_parser_classification():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--input_dir", type=str, required=True, help="path to file to classify"
@@ -172,3 +176,13 @@ def get_arg_parser_hdt_classification():
         help="format of dataset to use: (i) file or (ii) API",
     )
     return parser
+
+
+def get_env_variable(var_name, default_value, cast_type):
+    value = os.getenv(var_name, default_value)
+    try:
+        return cast_type(value)
+    except ValueError:
+        raise ValueError(
+            f"Environment variable {var_name} must be of type {cast_type.__name__}"
+        )
