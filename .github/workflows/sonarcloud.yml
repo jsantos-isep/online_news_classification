@@ -33,6 +33,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with: 
           args: >
-            -Dsonar.organization=jsantos-isep \
+            -Dsonar.organization=jsantos-isep
             -Dsonar.projectKey=jsantos-isep_online_news_classification
   
