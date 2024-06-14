@@ -247,7 +247,7 @@ def classify(args, files, model_pkl_file):
         )
 
         # create plot
-        fig, ax = plt.subplots(figsize=(40, 20))
+        _, ax = plt.subplots(figsize=(40, 20))
         ax.plot(range(index), preq, label="Prequential")
         ax.plot(range(index), preq_a, label="Prequential Alpha")
         ax.plot(range(index), preq_w, label="Prequential Window")
