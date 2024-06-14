@@ -37,7 +37,6 @@ def convert(f, output_file):
         tags = []
         for tag in row["tags"]:
             tags.append(str(tag["id"]))
-        data.at[index, "final_tags"] = tags
         data.at[index, "final_tags"] = list(tags)
 
     data = data.drop(["tags"], axis=1)
