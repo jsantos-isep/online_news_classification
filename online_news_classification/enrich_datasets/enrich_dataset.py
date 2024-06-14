@@ -13,6 +13,9 @@ from online_news_classification.functions import enrich, manage_datasets, setup
 
 load_dotenv()
 
+FILE_EXTENSION = ".csv"
+FILE_EXTENSION_SEARCH = "*.csv"
+
 
 def extract_integer(filename):
     if filename.endswith(".csv"):
@@ -28,26 +31,18 @@ def get_key(fp):
 
 
 def enrich_dataset(filename):
+    basename = os.path.splitext(os.path.basename(filename))[0]
     args = setup.get_arg_parser_enrich().parse_args()
     (
         start_time,
         refined,
         nlp,
         stop_words,
-    ) = setup.initilize_with_models(
-        "enrich_"
-        + str(args.capitalization)
-        + "_"
-        + os.path.splitext(os.path.basename(filename))[0]
-    )
+    ) = setup.initilize_with_models(f"enrich_{str(args.capitalization)}_{basename}")
     logging.info(filename)
     output_file = (
-        args.output_dir
-        + "enriched_"
-        + str(args.capitalization)
-        + "_"
-        + os.path.splitext(os.path.basename(filename))[0]
-        + ".csv"
+        f"{args.output_dir}enriched_{str(args.capitalization)}_"
+        + f"{basename}{FILE_EXTENSION}"
     )
     logging.info(output_file)
     dataset = manage_datasets.read_csv_dataset(filename=filename, separator=";")
@@ -95,12 +90,16 @@ def main():
             os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
         )
         if args.dataset_format == "file":
-            files_copy = sorted(glob.glob(in_directory + "*.csv"), key=get_key)
-            files = sorted(glob.glob(tmp_directory + "*.csv"), key=get_key)
+            files_copy = sorted(
+                glob.glob(f"{in_directory}{FILE_EXTENSION_SEARCH}"), key=get_key
+            )
+            files = sorted(
+                glob.glob(f"{tmp_directory}{FILE_EXTENSION_SEARCH}"), key=get_key
+            )
 
         else:
-            files_copy = sorted(glob.glob(in_directory + "*.csv"))
-            files = sorted(glob.glob(tmp_directory + "*.csv"))
+            files_copy = sorted(glob.glob(f"{in_directory}{FILE_EXTENSION_SEARCH}"))
+            files = sorted(glob.glob(f"{tmp_directory}{FILE_EXTENSION_SEARCH}"))
 
         for file in files_copy:
             shutil.copy2(file, tmp_directory)
