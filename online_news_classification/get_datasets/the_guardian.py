@@ -25,8 +25,9 @@ def main():
         initial_date_str = str(initial_date.strftime("%Y-%m-%d"))
         next_date_str = str(next_date.strftime("%Y-%m-%d"))
         API_URL = (
-            f"{base_url}&from-date={initial_date_str}&to-date={next_date_str}&order-by={ORDER_BY}"
-            + "&page-size=50&show-fields=trailText%2Cheadline&show-tags=keyword"
+            f"{base_url}&from-date={initial_date_str}&to-date={next_date_str}"
+            + f"&order-by={ORDER_BY}&page-size=50&show-fields=trailText%2Cheadline"
+            + "&show-tags=keyword"
         )
         response = requests.get(API_URL)
         logging.info(response.status_code)
@@ -36,17 +37,11 @@ def main():
             logging.info(number_of_pages)
             for page in range(number_of_pages):
                 url = (
-                    os.getenv("THE_GUARDIAN_BASE_API_URL")
-                    + "&from-date="
-                    + str(initial_date.strftime("%Y-%m-%d"))
-                    + "&to-date="
-                    + str(next_date.strftime("%Y-%m-%d"))
-                    + "&order-by="
-                    + ORDER_BY
-                    + "&page-size=50&page="
-                    + str(page)
-                    + "&show-fields=trailText%2Cheadline&show-tags=keyword"
+                    f"{base_url}&from-date={initial_date_str}&to-date={next_date_str}"
+                    + f"&order-by={ORDER_BY}&page-size=50&page={str(page)}&"
+                    + "show-fields=trailText%2Cheadline&show-tags=keyword"
                 )
+
                 page_response = requests.get(url)
                 logging.info(page_response)
                 if page_response.status_code == 200:
