@@ -38,28 +38,7 @@ def extract_integer(filename):
         return -1
 
 
-def classify(args, files, model_pkl_file):
-    logging.info("Starting original experiment with: %s", str(args))
-    page_hinkley = drift.binary.DDM()
-    ps = PorterStemmer()
-    preds = []
-    soma = 0
-    preq = []
-    drifts = []
-
-    alpha = 0.99
-    soma_a = 0
-    nr_a = 0
-    preq_a = []
-
-    wind = 500
-    soma_w = 0
-    preq_w = []
-
-    metric = metrics.Accuracy()
-    accuracies = []
-    index = 0
-
+def feature_extraction_model(args):
     if args.feature_extraction == "BoW":
         en_stops = set(stopwords.words("english"))
         feature_extraction = fx.BagOfWords(
@@ -68,6 +47,10 @@ def classify(args, files, model_pkl_file):
     else:
         feature_extraction = fx.TFIDF(lowercase=True, strip_accents=False, on="text")
 
+    return feature_extraction
+
+
+def classifier_model(args):
     if args.classification_type == "adaptive":
         classifier = tree.HoeffdingAdaptiveTreeClassifier(
             grace_period=float(os.getenv("GRACE_PERIOD")),
@@ -87,6 +70,80 @@ def classify(args, files, model_pkl_file):
             max_depth=1000,
             nominal_attributes=["category"],
         )
+    return classifier
+
+
+def remove_punctuation(args, xi):
+    if args.text == "title":
+        text_no_punct = str(xi["title"]).translate(
+            str.maketrans("", "", string.punctuation)
+        )
+    elif args.text == "abstract":
+        text_no_punct = str(xi["abstract"]).translate(
+            str.maketrans("", "", string.punctuation)
+        )
+    else:
+        text_no_punct = str(xi["title"]).translate(
+            str.maketrans("", "", string.punctuation)
+        ) + str(xi["abstract"]).translate(str.maketrans("", "", string.punctuation))
+    return text_no_punct
+
+
+def detector_model(args, pipeline_original):
+    if args.classification_type == "adaptive":
+        detector = pipeline_original["classifier"].drift_detector
+    else:
+        detector = drift.binary.DDM()
+    return detector
+
+
+def get_text(args, xi, stemming):
+    if args.dataset_type == "original":
+        xi["text"] = stemming
+    elif args.dataset_type == "enriched":
+        if args.text == "title":
+            xi["text"] = xi["title_entities"]
+        elif args.text == "abstract":
+            xi["text"] = xi["abstract_entities"]
+        else:
+            xi["text"] = xi["title_entities"] + xi["abstract_entities"]
+    else:
+        entities = ""
+        if args.text == "title":
+            xi["title_entities"] = ast.literal_eval(xi["title_entities"])
+            entities = " ".join(xi["title_entities"])
+        elif args.text == "abstract":
+            entities = xi["abstract_entities"]
+        else:
+            xi["title_entities"] = ast.literal_eval(xi["title_entities"])
+            entities = " ".join(xi["title_entities"]) + " " + xi["abstract_entities"]
+
+        xi["text"] = f"{stemming} {entities}".strip()
+
+
+def classify(args, files, model_pkl_file):
+    logging.info("Starting original experiment with: %s", str(args))
+    ps = PorterStemmer()
+    preds = []
+    soma = 0
+    preq = []
+    drifts = []
+
+    alpha = 0.99
+    soma_a = 0
+    nr_a = 0
+    preq_a = []
+
+    wind = 500
+    soma_w = 0
+    preq_w = []
+
+    metric = metrics.Accuracy()
+    accuracies = []
+    index = 0
+
+    feature_extraction = feature_extraction_model(args)
+    classifier = classifier_model(args)
 
     pipeline_original = compose.Pipeline(
         ("feature_extraction", feature_extraction), ("classifier", classifier)
@@ -104,20 +161,7 @@ def classify(args, files, model_pkl_file):
         # Perform the online classification loop
         for xi, yi in stream.iter_pandas(docs, target):
             # Preprocess the current instance
-            if args.text == "title":
-                text_no_punct = str(xi["title"]).translate(
-                    str.maketrans("", "", string.punctuation)
-                )
-            elif args.text == "abstract":
-                text_no_punct = str(xi["abstract"]).translate(
-                    str.maketrans("", "", string.punctuation)
-                )
-            else:
-                text_no_punct = str(xi["title"]).translate(
-                    str.maketrans("", "", string.punctuation)
-                ) + str(xi["abstract"]).translate(
-                    str.maketrans("", "", string.punctuation)
-                )
+            text_no_punct = remove_punctuation(args, xi)
             word_tokens = word_tokenize(text_no_punct)
             text = []
             for word in word_tokens:
@@ -128,30 +172,7 @@ def classify(args, files, model_pkl_file):
             # logging.info("Stemming = %s", stemming)
             xi["title_stemmed"] = stemming
 
-            if args.dataset_type == "original":
-                xi["text"] = stemming
-            elif args.dataset_type == "enriched":
-                if args.text == "title":
-                    xi["text"] = xi["title_entities"]
-                elif args.text == "abstract":
-                    xi["text"] = xi["abstract_entities"]
-                else:
-                    xi["text"] = xi["title_entities"] + xi["abstract_entities"]
-            else:
-                if args.text == "title":
-                    xi["title_entities"] = ast.literal_eval(xi["title_entities"])
-                    entities = " ".join([sub for sub in xi["title_entities"]])
-                    xi["text"] = stemming + " " + entities
-                elif args.text == "abstract":
-                    xi["text"] = stemming + xi["abstract_entities"]
-                else:
-                    xi["text"] = (
-                        stemming
-                        + " "
-                        + xi["title_entities"]
-                        + " "
-                        + xi["abstract_entities"]
-                    )
+            xi["text"] = get_text(args, xi, stemming)
 
             logging.info(xi["text"])
             pipeline_original["feature_extraction"].learn_one(xi)
@@ -164,10 +185,7 @@ def classify(args, files, model_pkl_file):
             accuracies.append(metric.get().real)
             logging.info("Accuracy = %s", metric.get().real)
 
-            if y_pred == yi:
-                val = 0
-            else:
-                val = 1
+            val = 0 if y_pred == yi else 1
             preds.append(val)
             soma += val
             preq.append(soma / (index + 1))
@@ -183,10 +201,7 @@ def classify(args, files, model_pkl_file):
             else:
                 preq_w.append(soma_w / (index + 1))
 
-            if args.classification_type == "adaptive":
-                detector = pipeline_original["classifier"].drift_detector
-            else:
-                detector = page_hinkley
+            detector = detector_model(args, pipeline_original)
 
             _ = detector.update(val)
             if detector.drift_detected:
@@ -240,34 +255,14 @@ def classify(args, files, model_pkl_file):
             plt.axvline(x=d["index"], color="r")
         ax.legend()
         plt.savefig(
-            plot_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_plot.png"
+            f"{plot_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_{args.dataset_type}_plot.png"
         )
 
         # create summary
         with open(
-            summary_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_summary.csv",
+            f"{summary_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_{args.dataset_type}_summary.csv",
             "w",
             newline="",
         ) as f:
