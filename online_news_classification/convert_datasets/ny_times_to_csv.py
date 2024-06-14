@@ -9,7 +9,7 @@ from online_news_classification.functions import manage_datasets, setup
 load_dotenv()
 
 
-def convert(f, args, output_file):
+def convert(f, output_file):
     dataset = manage_datasets.read_json_dataset(filename=f)
     data = pd.json_normalize(dataset["results"][0])
     logging.info(len(data))
@@ -69,11 +69,11 @@ def main():
             if filename.endswith(".json"):
                 f = os.path.join(args.input, filename)
                 output_file = os.path.join(args.output, os.path.splitext(filename)[0])
-                convert(f, args, output_file)
+                convert(f, output_file)
     else:
         filename = os.path.basename(args.input)
         output_file = os.path.join(args.output, os.path.splitext(filename)[0])
-        convert(args.input, args, output_file)
+        convert(args.input, output_file)
 
     setup.finalize(start_time)
 
