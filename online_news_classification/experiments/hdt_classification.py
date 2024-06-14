@@ -86,7 +86,8 @@ def classifier_model(args):
 
     if classification_type not in classifier_map:
         logging.info(
-            f"Warning: Unsupported classification type '{classification_type}'. Using default classifier."
+            f"Warning: Unsupported classification type '{classification_type}'. "
+            + "Using default classifier."
         )
 
     return classifier
