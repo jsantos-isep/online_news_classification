@@ -232,7 +232,7 @@ def classify(args, files, model_pkl_file):
         )
 
         # create plot
-        fig, ax = plt.subplots(figsize=(40, 20))
+        _, ax = plt.subplots(figsize=(40, 20))
         ax.plot(range(index), preq, label="Prequential")
         ax.plot(range(index), preq_a, label="Prequential Alpha")
         ax.plot(range(index), preq_w, label="Prequential Window")
@@ -240,34 +240,14 @@ def classify(args, files, model_pkl_file):
             plt.axvline(x=d["index"], color="r")
         ax.legend()
         plt.savefig(
-            plot_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_plot.png"
+            f"{plot_file}_{str(args.capitalization)}_{args.classification_type}"
+            + f"_{args.feature_extraction}_{args.text}_{args.dataset_type}_plot.png"
         )
 
         # create summary
         with open(
-            summary_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_summary.csv",
+            f"{summary_file}_{str(args.capitalization)}_{args.classification_type}"
+            + f"_{args.feature_extraction}_{args.text}_{args.dataset_type}_summary.csv"
             "w",
             newline="",
         ) as f:
@@ -297,18 +277,8 @@ def classify(args, files, model_pkl_file):
         # create plot aux
         df = pd.DataFrame({"preq": preq, "preq_a": preq_a, "preq_w": preq_w})
         df.to_csv(
-            plot_aux_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
-            + "_plot_aux.csv",
+            f"{plot_aux_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_{args.dataset_type}_plot_aux.csv",
             index=False,
         )
 
@@ -333,17 +303,8 @@ def classify(args, files, model_pkl_file):
         #     f.close()
 
         with open(
-            plot_aux_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_"
-            + args.dataset_type
+            f"{plot_aux_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_{args.dataset_type}"
             + "_accuracy_aux.csv",
             "w",
             newline="",
@@ -355,16 +316,8 @@ def classify(args, files, model_pkl_file):
 
         # create tree
         with open(
-            tree_file
-            + "_"
-            + str(args.capitalization)
-            + "_"
-            + args.classification_type
-            + "_"
-            + args.feature_extraction
-            + "_"
-            + args.text
-            + "_tree.dot",
+            f"{tree_file}_{str(args.capitalization)}_{args.classification_type}_"
+            + f"{args.feature_extraction}_{args.text}_tree.dot",
             "w",
         ) as f:
             f.write(str(pipeline_original["classifier"].draw()))
@@ -406,20 +359,11 @@ def main():
             shutil.copy2(file, tmp_directory)
         files = natsorted(glob.glob(tmp_directory + "*.csv"))
 
+    models_folder = os.getenv("MODELS_FOLDER")
     model_pkl_file = os.path.join(
         os.getcwd(),
-        os.getenv("MODELS_FOLDER")
-        + "model_dt_"
-        + str(args.dataset)
-        + "_"
-        + str(args.capitalization)
-        + "_"
-        + args.classification_type
-        + "_"
-        + args.feature_extraction
-        + "_"
-        + args.text
-        + ".pkl",
+        f"{models_folder}model_dt_{str(args.dataset)}_{str(args.capitalization)}_"
+        + f"{args.classification_type}_{args.feature_extraction}_{args.text}.pkl",
     )
     classify(args, files, model_pkl_file)
 
