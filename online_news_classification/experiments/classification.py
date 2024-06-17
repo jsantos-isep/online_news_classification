@@ -194,30 +194,7 @@ def classify(args, files, model_pkl_file):
             # logging.info("Stemming = %s", stemming)
             xi["title_stemmed"] = stemming
 
-            if args.dataset_type == "original":
-                xi["text"] = stemming
-            elif args.dataset_type == "enriched":
-                if args.text == "title":
-                    xi["text"] = xi["title_entities"]
-                elif args.text == "abstract":
-                    xi["text"] = xi["abstract_entities"]
-                else:
-                    xi["text"] = xi["title_entities"] + xi["abstract_entities"]
-            else:
-                if args.text == "title":
-                    xi["title_entities"] = ast.literal_eval(xi["title_entities"])
-                    entities = " ".join([sub for sub in xi["title_entities"]])
-                    xi["text"] = stemming + " " + entities
-                elif args.text == "abstract":
-                    xi["text"] = stemming + xi["abstract_entities"]
-                else:
-                    xi["text"] = (
-                        stemming
-                        + " "
-                        + xi["title_entities"]
-                        + " "
-                        + xi["abstract_entities"]
-                    )
+            xi["text"] = get_text(args, xi, stemming)
 
             logging.info(xi["text"])
             pipeline_original["feature_extraction"].learn_one(xi)
