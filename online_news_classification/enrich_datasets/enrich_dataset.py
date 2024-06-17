@@ -9,12 +9,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from send2trash import send2trash
 
+from online_news_classification import constants
 from online_news_classification.functions import enrich, manage_datasets, setup
 
 load_dotenv()
-
-FILE_EXTENSION = ".csv"
-FILE_EXTENSION_SEARCH = "*.csv"
 
 
 def extract_integer(filename):
@@ -42,7 +40,7 @@ def enrich_dataset(filename):
     logging.info(filename)
     output_file = (
         f"{args.output_dir}enriched_{str(args.capitalization)}_"
-        + f"{basename}{FILE_EXTENSION}"
+        + f"{basename}{constants.FILE_EXTENSION}"
     )
     logging.info(output_file)
     dataset = manage_datasets.read_csv_dataset(filename=filename, separator=";")
@@ -91,15 +89,21 @@ def main():
         )
         if args.dataset_format == "file":
             files_copy = sorted(
-                glob.glob(f"{in_directory}{FILE_EXTENSION_SEARCH}"), key=get_key
+                glob.glob(f"{in_directory}{constants.FILE_EXTENSION_SEARCH}"),
+                key=get_key,
             )
             files = sorted(
-                glob.glob(f"{tmp_directory}{FILE_EXTENSION_SEARCH}"), key=get_key
+                glob.glob(f"{tmp_directory}{constants.FILE_EXTENSION_SEARCH}"),
+                key=get_key,
             )
 
         else:
-            files_copy = sorted(glob.glob(f"{in_directory}{FILE_EXTENSION_SEARCH}"))
-            files = sorted(glob.glob(f"{tmp_directory}{FILE_EXTENSION_SEARCH}"))
+            files_copy = sorted(
+                glob.glob(f"{in_directory}{constants.FILE_EXTENSION_SEARCH}")
+            )
+            files = sorted(
+                glob.glob(f"{tmp_directory}{constants.FILE_EXTENSION_SEARCH}")
+            )
 
         for file in files_copy:
             shutil.copy2(file, tmp_directory)

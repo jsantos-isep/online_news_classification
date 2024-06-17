@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from refined.inference.processor import Refined
 
+from online_news_classification import constants
 from online_news_classification.functions import logs_config
 
 load_dotenv()
@@ -37,8 +38,8 @@ def initilize_with_models(log_name):
 
 def get_arg_parser_get_dataset_from_api():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--start_date", type=str, help="start date")
-    parser.add_argument("--end_date", type=str, help="end_date")
+    parser.add_argument("--start_date", type=str, help=constants.START_DATE_HELP)
+    parser.add_argument("--end_date", type=str, help=constants.END_DATE_HELP)
     parser.add_argument("--month", type=int, help="month")
     parser.add_argument("--year", type=int, help="year")
     return parser
@@ -47,10 +48,10 @@ def get_arg_parser_get_dataset_from_api():
 def get_arg_parser_to_csv():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--input", type=str, required=True, help="path to file to convert to csv"
+        "--input", type=str, required=True, help=constants.INPUT_PATH_HELP
     )
     parser.add_argument(
-        "--output", type=str, required=True, help="path to new csv file"
+        "--output", type=str, required=True, help=constants.OUTPUT_PATH_HELP
     )
     parser.add_argument(
         "--dataset_type",
@@ -69,8 +70,8 @@ def get_arg_parser_to_csv():
 
 def get_arg_parser_split():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_file", type=str, help="path to file to split")
-    parser.add_argument("--input_dir", type=str, help="path to file to split")
+    parser.add_argument("--input_file", type=str, help=constants.INPUT_FILE_SPLIT_HELP)
+    parser.add_argument("--input_dir", type=str, help=constants.INPUT_FILE_SPLIT_HELP)
     parser.add_argument(
         "--out_dir", type=str, required=True, help="directory to put files"
     )
@@ -86,7 +87,7 @@ def get_arg_parser_split():
 def get_arg_parser_merge():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--input_dir", type=str, required=True, help="path to file to split"
+        "--input_dir", type=str, required=True, help=constants.INPUT_FILE_SPLIT_HELP
     )
     parser.add_argument(
         "--output_file", type=str, required=True, help="directory to put files"
