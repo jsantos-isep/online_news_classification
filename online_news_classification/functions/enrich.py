@@ -26,7 +26,7 @@ def process_span_abstract(spans_abstract):
     return abstract_entities
 
 
-def enrich(dataset, option, refined, nlp, stop_words):
+def enrich(dataset, option, refined, stop_words):
     for index, row in dataset.iterrows():
         logging.info("Index = %s", index)
         abstract_entities = []
