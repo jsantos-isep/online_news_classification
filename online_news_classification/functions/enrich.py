@@ -40,7 +40,7 @@ def enrich(dataset, option, refined, stop_words):
                 row["title"] = " ".join(filtered_title)
                 word_tokens_abstract = word_tokenize(str(row["abstract"]))
                 filtered_abstract = [
-                    w for w in word_tokens_abstract if not w.lower() in stop_words
+                    w for w in word_tokens_abstract if w.lower() not in stop_words
                 ]
                 row["abstract"] = " ".join(filtered_abstract)
                 spans_title = refined.process_text(row["title"])
