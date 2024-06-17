@@ -22,7 +22,7 @@ def generate_plot_image(
     feature_type,
     enrichment_type,
 ):
-    fig, ax = plt.subplots(figsize=(12, 6))
+    _, ax = plt.subplots(figsize=(12, 6))
     ax.plot(range(docs_number), preq, label="Prequential")
     ax.plot(range(docs_number), preq_a, label="Prequential Alpha")
     ax.plot(range(docs_number), preq_w, label="Prequential Window")
