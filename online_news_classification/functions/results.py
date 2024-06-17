@@ -110,8 +110,8 @@ def generate_tree_file(
 ):
     trees_folder = os.getenv("TREES_FOLDER")
     with open(
-        f"{trees_folder}tree_{file_name}_{dataset_name}_{dataset_type}_{classifier_type}_"
-        + f"{feature_type}_{enrichment_type}_{DATETIME_FORMAT}.dot",
+        f"{trees_folder}tree_{file_name}_{dataset_name}_{dataset_type}_"
+        + f"{classifier_type}_{feature_type}_{enrichment_type}_{DATETIME_FORMAT}.dot",
         "w",
     ) as f:
         f.write(str(model.draw()))
