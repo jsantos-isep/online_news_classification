@@ -35,7 +35,7 @@ def enrich(dataset, option, refined, stop_words):
                 # lower case
                 word_tokens_title = word_tokenize(str(row["title"]))
                 filtered_title = [
-                    w for w in word_tokens_title if not w.lower() in stop_words
+                    w for w in word_tokens_title if w.lower() not in stop_words
                 ]
                 row["title"] = " ".join(filtered_title)
                 word_tokens_abstract = word_tokenize(str(row["abstract"]))
@@ -51,7 +51,7 @@ def enrich(dataset, option, refined, stop_words):
                 filtered_title = [
                     w
                     for w in word_tokens_title
-                    if not text_clean.truecase(w, only_proper_nouns=False) in stop_words
+                    if text_clean.truecase(w, only_proper_nouns=False) not in stop_words
                 ]
                 row["title"] = " ".join(filtered_title)
                 word_tokens_abstract = word_tokenize(str(row["abstract"]))
