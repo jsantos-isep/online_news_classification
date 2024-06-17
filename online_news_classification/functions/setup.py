@@ -113,7 +113,7 @@ def get_arg_parser_enrich():
         "--output_dir", type=str, required=True, help="path to enriched file"
     )
     parser.add_argument(
-        "--capitalization", type=int, default=0, help="capitalization option"
+        "--capitalization", type=int, default=0, help=constants.CAPITALIZATION_HELP
     )
     parser.add_argument(
         "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
@@ -155,10 +155,13 @@ def get_arg_parser_classification():
         "--dataset", type=str, required=True, help=constants.DATASET_CLASSIFICATION_HELP
     )
     parser.add_argument(
-        "--capitalization", type=int, default=0, help="capitalization option"
+        "--capitalization", type=int, default=0, help=constants.CAPITALIZATION_HELP
     )
     parser.add_argument(
-        "--feature_extraction", type=str, default="tf-idf", help="capitalization option"
+        "--feature_extraction",
+        type=str,
+        default="tf-idf",
+        help="feature extraction option",
     )
     parser.add_argument(
         "--classification_type",
@@ -166,7 +169,7 @@ def get_arg_parser_classification():
         default="non_adaptive",
         help="capitalization option",
     )
-    parser.add_argument("--text", type=str, required=True, help="capitalization option")
+    parser.add_argument("--text", type=str, required=True, help="text option")
     parser.add_argument(
         "--dataset_type",
         type=str,
