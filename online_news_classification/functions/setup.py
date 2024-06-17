@@ -76,7 +76,7 @@ def get_arg_parser_split():
         "--out_dir", type=str, required=True, help="directory to put files"
     )
     parser.add_argument(
-        "--dataset", type=str, required=True, help="name of the dataset to split"
+        "--dataset", type=str, required=True, help=constants.DATASET_SPLIT_HELP
     )
     parser.add_argument(
         "--num_lines", type=int, required=True, help="number of lines in each file"
@@ -96,7 +96,7 @@ def get_arg_parser_merge():
         "--dataset",
         type=str,
         required=True,
-        help="name of the dataset to split",
+        help=constants.DATASET_MERGE_HELP,
     )
     return parser
 
@@ -116,10 +116,13 @@ def get_arg_parser_enrich():
         "--capitalization", type=int, default=0, help="capitalization option"
     )
     parser.add_argument(
-        "--dataset", type=str, required=True, help="name of the dataset to split"
+        "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
     )
     parser.add_argument(
-        "--dataset_format", type=str, required=True, help="name of the dataset to split"
+        "--dataset_format",
+        type=str,
+        required=True,
+        help="name of the dataset to enrich",
     )
     parser.add_argument(
         "--num_processes",
@@ -149,7 +152,7 @@ def get_arg_parser_classification():
         "--results_dir", type=str, required=True, help="path to results folder"
     )
     parser.add_argument(
-        "--dataset", type=str, required=True, help="name of the dataset to split"
+        "--dataset", type=str, required=True, help=constants.DATASET_CLASSIFICATION_HELP
     )
     parser.add_argument(
         "--capitalization", type=int, default=0, help="capitalization option"
