@@ -189,7 +189,6 @@ def classify(args, files, model_pkl_file):
                 text.append(ps.stem(word))
             stemming = " ".join([sub for sub in text])
             logging.info("Index = %s", index)
-            # logging.info("Title = %s", xi["title"])
             # logging.info("Stemming = %s", stemming)
             xi["title_stemmed"] = stemming
 
