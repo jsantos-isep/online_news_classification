@@ -195,10 +195,7 @@ def classify(args, files, model_pkl_file):
             # Preprocess the current instance
             text_no_punct = remove_punctuation(args, xi)
             word_tokens = word_tokenize(text_no_punct)
-            text = []
-            for word in word_tokens:
-                text.append(ps.stem(word))
-            stemming = " ".join([sub for sub in text])
+            stemming = " ".join([ps.stem(word) for word in word_tokens])
             logging.info("Index = %s", index)
             # logging.info("Stemming = %s", stemming)
             xi["title_stemmed"] = stemming
