@@ -50,8 +50,8 @@ def main():
                     final_results = final_results + results
         if len(final_results) > 0:
             json_string = json.dumps({"results": final_results})
-            isExist = os.path.exists(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
-            if not isExist:
+            exist = os.path.exists(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
+            if not exist:
                 os.makedirs(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
             with open(
                 os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL")
