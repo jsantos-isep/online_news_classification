@@ -203,10 +203,8 @@ def classify(args, files, model_pkl_file):
             accuracies.append(metric.get().real)
             logging.info("Accuracy = %s", metric.get().real)
 
-            if y_pred == yi:
-                val = 0
-            else:
-                val = 1
+            val = 0 if y_pred == yi else 1
+
             preds.append(val)
             soma += val
             preq.append(soma / (index + 1))
@@ -222,10 +220,11 @@ def classify(args, files, model_pkl_file):
             else:
                 preq_w.append(soma_w / (index + 1))
 
-            if args.classification_type == "adaptive":
-                detector = pipeline_original["classifier"].drift_detector
-            else:
-                detector = page_hinkley
+            detector = (
+                pipeline_original["classifier"].drift_detector
+                if args.classification_type == "adaptive"
+                else page_hinkley
+            )
 
             _ = detector.update(val)
             if detector.drift_detected:
