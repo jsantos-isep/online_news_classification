@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.6](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.5...v1.1.6) (2024-06-18)
+
+
+### Bug Fixes
+
+* Define a constant instead of duplicating this literal "*.csv" 4 times. ([e5d52df](https://github.com/jsantos-isep/online_news_classification/commit/e5d52df25cbc353601aa7c85726733a903cff463))
+* Define a constant instead of duplicating this literal "*.csv" 4 times. ([bcc1684](https://github.com/jsantos-isep/online_news_classification/commit/bcc168420d37093cb5e60cbe3309dccb7c850354))
+* Fix this invalid "+" operation on a type which doesn't support it. ([b60f37e](https://github.com/jsantos-isep/online_news_classification/commit/b60f37e9e754effeda7a2349a65ac76dbe223a1f))
+* Fix this invalid "+" operation on a type which doesn't support it. ([70a852a](https://github.com/jsantos-isep/online_news_classification/commit/70a852a20b2a09957593bf128d875f43898088d0))
+* Improve Cognitive Complexity ([787a508](https://github.com/jsantos-isep/online_news_classification/commit/787a508465411e32b578e9f123e9e06708084dba))
+* Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed. ([a64ffa3](https://github.com/jsantos-isep/online_news_classification/commit/a64ffa3cd670ad6fc57bc0893d65d1f2d0e88733))
+* Remove the unused function parameter "args". ([5623685](https://github.com/jsantos-isep/online_news_classification/commit/5623685a8e85a2dc2222b678df150dd7f4b0eb18))
+* update get text ([db66bad](https://github.com/jsantos-isep/online_news_classification/commit/db66bad0180e7e6afd37adc0010d1c0ff29fe173))
+* Verify this is the key that was intended; a value has already been saved for it on line 40. ([e5413e8](https://github.com/jsantos-isep/online_news_classification/commit/e5413e8c8b4121a59e60f086d445c3758b1495de))
+
 ## [1.1.5](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.4...v1.1.5) (2024-06-13)
 
 
