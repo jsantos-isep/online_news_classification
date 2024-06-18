@@ -139,9 +139,22 @@ def get_text(args, xi, stemming):
     return " ".join(filter(None, text_parts))
 
 
+def get_detector(args, pipeline_original):
+    if args.classification_type == "adaptive":
+        detector = pipeline_original["classifier"].drift_detector
+    else:
+        detector = drift.binary.DDM()
+    return detector
+
+
+def add_drifts_to_plot(drifts, plt):
+    for d in drifts:
+        plt.axvline(x=d["index"], color="r")
+
+
 def classify(args, files, model_pkl_file):
     logging.info("Starting original experiment with: %s", str(args))
-    page_hinkley = drift.binary.DDM()
+
     ps = PorterStemmer()
     preds = []
     soma = 0
@@ -220,11 +233,7 @@ def classify(args, files, model_pkl_file):
             else:
                 preq_w.append(soma_w / (index + 1))
 
-            detector = (
-                pipeline_original["classifier"].drift_detector
-                if args.classification_type == "adaptive"
-                else page_hinkley
-            )
+            detector = get_detector(args, pipeline_original)
 
             _ = detector.update(val)
             if detector.drift_detected:
@@ -274,8 +283,7 @@ def classify(args, files, model_pkl_file):
         ax.plot(range(index), preq, label="Prequential")
         ax.plot(range(index), preq_a, label="Prequential Alpha")
         ax.plot(range(index), preq_w, label="Prequential Window")
-        for d in drifts:
-            plt.axvline(x=d["index"], color="r")
+        add_drifts_to_plot(drifts, plt)
         ax.legend()
         plt.savefig(
             f"{plot_file}_{str(args.capitalization)}_{args.classification_type}"
