@@ -17,7 +17,7 @@ from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from river import compose, drift
 from river import feature_extraction as fx
-from river import forest, metrics, naive_bayes, stream, tree
+from river import forest, metrics, naive_bayes, neighbors, stream, tree
 from send2trash import send2trash
 
 from online_news_classification import constants
@@ -52,9 +52,9 @@ def feature_extraction_model(args):
 
 def classifier_model(args):
     classification_type = args.classification_type
-    grace_period = setup.get_env_variable("GRACE_PERIOD", 50, float)
-    delta = setup.get_env_variable("DELTA", 0.01, float)
-    split_criterion = setup.get_env_variable("SPLIT_CRITERION", "gini", string)
+    grace_period = os.getenv("GRACE_PERIOD")
+    delta = os.getenv("DELTA")
+    split_criterion = os.getenv("SPLIT_CRITERION")
 
     classifier_map = {
         "hdt_adaptive": tree.HoeffdingAdaptiveTreeClassifier(
@@ -74,14 +74,16 @@ def classifier_model(args):
             max_depth=1000,
             nominal_attributes=["category"],
         ),
-        "naive_bayes": naive_bayes.BernoulliNB(alpha=1),
-        "forest_arf": forest.ARFClassifier(seed=8, leaf_prediction="mc"),
-        "default": forest.AMFClassifier(
+        "naive_bayes": naive_bayes.MultinomialNB(alpha=1),
+        "forest_amf": forest.AMFClassifier(
             n_estimators=10, use_aggregation=True, dirichlet=0.5, seed=1
         ),
+        "knn": neighbors.KNNClassifier(),
     }
 
-    classifier = classifier_map.get(classification_type, classifier_map["default"])
+    classifier = classifier_map.get(
+        classification_type, classifier_map["hdt_non_adaptive"]
+    )
 
     if classification_type not in classifier_map:
         logging.info(
@@ -109,34 +111,25 @@ def remove_punctuation(args, xi):
 
 
 def get_text(args, xi, stemming):
-    def get_entities(key):
-        if key in xi:
-            value = xi[key]
-            try:
-                return (
-                    " ".join(ast.literal_eval(value))
-                    if isinstance(value, str)
-                    else value
-                )
-            except (ValueError, SyntaxError):
-                return value
-        return ""
-
-    title_entities = get_entities("title_entities")
-    abstract_entities = get_entities("abstract_entities")
-
     if args.dataset_type == "original":
-        return stemming
-
-    text_parts = [stemming] if args.dataset_type != "enriched" else []
-    if args.text == "title":
-        text_parts.append(title_entities)
-    elif args.text == "abstract":
-        text_parts.append(abstract_entities)
+        text = stemming
+    elif args.dataset_type == "enriched":
+        if args.text == "title":
+            text = xi["title_entities"]
+        elif args.text == "abstract":
+            text = xi["abstract_entities"]
+        else:
+            text = xi["title_entities"] + xi["abstract_entities"]
     else:
-        text_parts.extend([title_entities, abstract_entities])
-
-    return " ".join(filter(None, text_parts))
+        if args.text == "title":
+            xi["title_entities"] = ast.literal_eval(xi["title_entities"])
+            entities = " ".join([sub for sub in xi["title_entities"]])
+            text = stemming + entities
+        elif args.text == "abstract":
+            text = stemming + xi["abstract_entities"]
+        else:
+            text = stemming + xi["title_entities"] + " " + xi["abstract_entities"]
+    return text
 
 
 def get_detector(args, pipeline_original):
@@ -181,37 +174,62 @@ def classify(args, files, model_pkl_file):
         ("feature_extraction", feature_extraction), ("classifier", classifier)
     )
 
+    if os.path.exists(model_pkl_file):
+        # Open the pickle file in binary read mode
+        with open(model_pkl_file, "rb") as file:
+            data = pickle.load(file)
+            pipeline_original = data["model"]
+            preq = data["preq"]
+            preq_a = data["preq_a"]
+            preq_w = data["preq_w"]
+            accuracies = data["accuracies"]
+            index = data["index"]
+            preds = data["preds"]
+            soma = data["soma"]
+            drifts = data["drifts"]
+            soma_a = data["soma_a"]
+            nr_a = data["nr_a"]
+            soma_w = data["soma_w"]
+            metric = data["metric"]
+
+    start_time_all = time.time()
     for file in files:
         start_time = time.time()
-        dataset = manage_datasets.load_dataset_classify(file)
+        dataset = manage_datasets.load_dataset(file)
         dataset["title_stemmed"] = pd.Series(dtype="string")
         dataset["text"] = pd.Series(dtype="string")
 
         target = dataset["category"]
         docs = dataset.drop(["category"], axis=1)
 
+        i = 0
+
         # Perform the online classification loop
         for xi, yi in stream.iter_pandas(docs, target):
+            i += 1
             # Preprocess the current instance
             text_no_punct = remove_punctuation(args, xi)
             word_tokens = word_tokenize(text_no_punct)
             stemming = " ".join([ps.stem(word) for word in word_tokens])
-            logging.info("Index = %s", index)
+
             # logging.info("Stemming = %s", stemming)
             xi["title_stemmed"] = stemming
 
             xi["text"] = get_text(args, xi, stemming)
 
-            logging.info(xi["text"])
+            # logging.info(xi["text"])
             pipeline_original["feature_extraction"].learn_one(xi)
             transformed_doc = pipeline_original["feature_extraction"].transform_one(xi)
-            logging.info("Feature extraction result = %s", transformed_doc)
+            # logging.info("Feature extraction result = %s", transformed_doc)
 
             # Make predictions and update the evaluation metric using the classifier
             y_pred = pipeline_original["classifier"].predict_one(transformed_doc)
             metric.update(yi, y_pred)
             accuracies.append(metric.get().real)
-            logging.info("Accuracy = %s", metric.get().real)
+            if i == 10000:
+                logging.info("Index = %s", index)
+                logging.info("Accuracy = %s", metric.get().real)
+                i = 0
 
             val = 0 if y_pred == yi else 1
 
@@ -267,13 +285,13 @@ def classify(args, files, model_pkl_file):
             + "/plot_aux/"
             + os.path.splitext(os.path.basename(file))[0],
         )
-        tree_file = os.path.join(
-            os.getcwd(),
-            os.getenv("DATASETS_FOLDER")
-            + args.results_dir
-            + "/tree/"
-            + os.path.splitext(os.path.basename(file))[0],
-        )
+        # tree_file = os.path.join(
+        #     os.getcwd(),
+        #     os.getenv("DATASETS_FOLDER")
+        #     + args.results_dir
+        #     + "/tree/"
+        #     + os.path.splitext(os.path.basename(file))[0],
+        # )
 
         # create plot
         _, ax = plt.subplots(figsize=(40, 20))
@@ -290,7 +308,7 @@ def classify(args, files, model_pkl_file):
         # create summary
         with open(
             f"{summary_file}_{str(args.capitalization)}_{args.classification_type}"
-            + f"_{args.feature_extraction}_{args.text}_{args.dataset_type}_summary.csv"
+            + f"_{args.feature_extraction}_{args.text}_{args.dataset_type}_summary.csv",
             "w",
             newline="",
         ) as f:
@@ -301,8 +319,9 @@ def classify(args, files, model_pkl_file):
                     "categories",
                     "mean_accuracy",
                     "time",
+                    "time_all",
                     "drifts",
-                    "summary",
+                    # "summary",
                 ]
             )
             writer.writerow(
@@ -311,8 +330,9 @@ def classify(args, files, model_pkl_file):
                     dataset["category"].nunique(),
                     metric.get().real,
                     (time.time() - start_time),
+                    (time.time() - start_time_all),
                     len(drifts),
-                    pipeline_original["classifier"].summary,
+                    # pipeline_original["classifier"].summary,
                 ]
             )
             f.close()
@@ -358,12 +378,12 @@ def classify(args, files, model_pkl_file):
             f.close()
 
         # create tree
-        with open(
-            f"{tree_file}_{str(args.capitalization)}_{args.classification_type}_"
-            + f"{args.feature_extraction}_{args.text}_tree.dot",
-            "w",
-        ) as f:
-            f.write(str(pipeline_original["classifier"].draw()))
+        # with open(
+        #     f"{tree_file}_{str(args.capitalization)}_{args.classification_type}_"
+        #     + f"{args.feature_extraction}_{args.text}_tree.dot",
+        #     "w",
+        # ) as f:
+        #     f.write(str(pipeline_original["classifier"].draw()))
 
         with open(model_pkl_file, "wb") as model_file:
             model_to_file = {
@@ -372,6 +392,14 @@ def classify(args, files, model_pkl_file):
                 "preq_a": preq_a,
                 "preq_w": preq_w,
                 "accuracies": accuracies,
+                "index": index,
+                "preds": preds,
+                "soma": soma,
+                "drifts": drifts,
+                "soma_a": soma_a,
+                "nr_a": nr_a,
+                "soma_w": soma_w,
+                "metric": metric,
             }
             pickle.dump(model_to_file, model_file)
         logging.info(model_to_file)
@@ -390,27 +418,31 @@ def main():
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.tmp_dir
     )
     if args.dataset_format == "file":
-        files_copy = realsorted(
-            glob.glob(in_directory + constants.FILE_EXTENSION_SEARCH)
-        )
-        # logging.info(files_copy)
-        for file in files_copy:
-            shutil.copy2(file, tmp_directory)
+        if args.with_copy == "yes":
+            files_copy = realsorted(
+                glob.glob(in_directory + constants.FILE_EXTENSION_SEARCH)
+            )
+            # logging.info(files_copy)
+            for file in files_copy:
+                shutil.copy2(file, tmp_directory)
         files = realsorted(glob.glob(tmp_directory + constants.FILE_EXTENSION_SEARCH))
     else:
-        files_copy = natsorted(
-            glob.glob(in_directory + constants.FILE_EXTENSION_SEARCH)
-        )
-        # logging.info(files_copy)
-        for file in files_copy:
-            shutil.copy2(file, tmp_directory)
+        if args.with_copy == "yes":
+            logging.info(in_directory)
+            files_copy = natsorted(
+                glob.glob(in_directory + constants.FILE_EXTENSION_SEARCH)
+            )
+            logging.info(files_copy)
+            for file in files_copy:
+                shutil.copy2(file, tmp_directory)
         files = natsorted(glob.glob(tmp_directory + constants.FILE_EXTENSION_SEARCH))
 
     models_folder = os.getenv("MODELS_FOLDER")
     model_pkl_file = os.path.join(
         os.getcwd(),
         f"{models_folder}model_dt_{str(args.dataset)}_{str(args.capitalization)}_"
-        + f"{args.classification_type}_{args.feature_extraction}_{args.text}.pkl",
+        + f"{args.classification_type}_{args.feature_extraction}_{args.text}"
+        + f"_{args.dataset_type}.pkl",
     )
     classify(args, files, model_pkl_file)
 

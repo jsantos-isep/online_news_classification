@@ -115,7 +115,7 @@ def main():
         pool.close()
         pool.join()
     else:
-        enrich(args.input_dir)
+        enrich_dataset(args.input_dir)
 
 
 if __name__ == "__main__":

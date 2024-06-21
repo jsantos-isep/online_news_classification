@@ -42,5 +42,5 @@ def save_dataset(dataset, filename):
 
 
 def load_dataset(filename):
-    file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + filename)
+    file = os.path.join(os.getenv("DATASETS_FOLDER"), filename)
     return pd.read_csv(file, sep=";", index_col=0)

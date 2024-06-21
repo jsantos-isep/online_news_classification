@@ -166,7 +166,7 @@ def get_arg_parser_classification():
     parser.add_argument(
         "--classification_type",
         type=str,
-        default="non_adaptive",
+        default="hdt_non_adaptive",
         help="capitalization option",
     )
     parser.add_argument("--text", type=str, required=True, help="text option")
@@ -181,6 +181,12 @@ def get_arg_parser_classification():
         type=str,
         default="file",
         help="format of dataset to use: (i) file or (ii) API",
+    )
+    parser.add_argument(
+        "--with_copy",
+        type=str,
+        default="no",
+        help="copy the existing files to tmp folder",
     )
     return parser
 
