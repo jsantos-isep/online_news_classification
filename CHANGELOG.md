@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.6...v1.1.7) (2024-06-21)
+
+
+### Bug Fixes
+
+* update enrich and classification ([2a15fdf](https://github.com/jsantos-isep/online_news_classification/commit/2a15fdfd8382d24cc4b08fc1be87de966a1e9f9d))
+
 ## [1.1.6](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.5...v1.1.6) (2024-06-18)
 
 
