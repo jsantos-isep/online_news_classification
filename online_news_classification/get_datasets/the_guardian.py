@@ -12,7 +12,7 @@ load_dotenv()
 
 
 def main():
-    args = setup.get_arg_parser_get_dataset_from_api().parse_args()
+    args = setup.get_arg_parser_get_dataset_the_guardian().parse_args()
     start_time = setup.initialize("get_dataset")
     base_url = os.getenv("THE_GUARDIAN_BASE_API_URL")
     ORDER_BY = "newest"
@@ -50,12 +50,14 @@ def main():
                     final_results = final_results + results
         if len(final_results) > 0:
             json_string = json.dumps({"results": final_results})
-            exist = os.path.exists(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
+            exist = os.path.exists(
+                os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL_JSON")
+            )
             if not exist:
-                os.makedirs(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL"))
+                os.makedirs(os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL_JSON"))
             with open(
-                os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL")
-                + "the_guardian_"
+                os.getenv("DATASETS_FOLDER_THE_GUARDIAN_ORIGINAL_JSON")
+                + "/the_guardian_"
                 + str(initial_date.strftime("%Y-%m-%d"))
                 + str(next_date.strftime("%Y-%m-%d"))
                 + ".json",
