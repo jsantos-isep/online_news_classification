@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.7...v1.2.0) (2024-09-05)
+
+
+### Features
+
+* LLM integration ([b2f2add](https://github.com/jsantos-isep/online_news_classification/commit/b2f2add357fffb58affd3ea1caa57e0941aa4dfd))
+* LLM integration ([53bc06d](https://github.com/jsantos-isep/online_news_classification/commit/53bc06df44553856fb0e0520f704cef9b8acf8a3))
+
 ## [1.1.7](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.6...v1.1.7) (2024-06-21)
 
 
