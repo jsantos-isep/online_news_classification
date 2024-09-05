@@ -3,6 +3,7 @@ import logging
 import os
 import time
 
+import spacy
 from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from refined.inference.processor import Refined
@@ -29,25 +30,18 @@ def initilize_with_models(log_name):
     refined = Refined.from_pretrained(
         model_name="wikipedia_model_with_numbers", entity_set="wikipedia"
     )
+    nlp = spacy.load("en_core_web_sm")
     stop_words = set(stopwords.words("english"))
-    return start_time, refined, stop_words
+    nlp.add_pipe("entityLinker", last=True)
+    return start_time, refined, nlp, stop_words
 
 
-def get_arg_parser_get_dataset_the_guardian():
+def get_arg_parser_get_dataset_from_api():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--start_date", type=str, required=True, help=constants.START_DATE_HELP
-    )
-    parser.add_argument(
-        "--end_date", type=str, required=True, help=constants.END_DATE_HELP
-    )
-    return parser
-
-
-def get_arg_parser_get_dataset_nytimes():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--month", type=int, required=True, help="month")
-    parser.add_argument("--year", type=int, required=True, help="year")
+    parser.add_argument("--start_date", type=str, help=constants.START_DATE_HELP)
+    parser.add_argument("--end_date", type=str, help=constants.END_DATE_HELP)
+    parser.add_argument("--month", type=int, help="month")
+    parser.add_argument("--year", type=int, help="year")
     return parser
 
 
@@ -110,25 +104,40 @@ def get_arg_parser_merge():
 def get_arg_parser_enrich():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--input_file",
+        "--input_dir",
         type=str,
         required=True,
-        help="file to enrich",
+        help="directory that have splitted files",
     )
     parser.add_argument(
         "--output_dir", type=str, required=True, help="path to enriched file"
     )
     parser.add_argument(
-        "--capitalization",
-        type=str,
-        default="original",
-        help=constants.CAPITALIZATION_HELP,
+        "--capitalization", type=int, default=0, help=constants.CAPITALIZATION_HELP
     )
     parser.add_argument(
         "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
     )
     parser.add_argument(
+        "--dataset_format",
+        type=str,
+        required=True,
+        help="name of the dataset to enrich",
+    )
+    parser.add_argument(
+        "--num_processes",
+        type=int,
+        default=5,
+        help="number of processes to make the parallel enrichment",
+    )
+    parser.add_argument(
         "--tmp_dir", type=str, required=True, help="path to enriched file"
+    )
+    parser.add_argument(
+        "--enrich_mode",
+        type=str,
+        default="folder",
+        help="process all folder or simply a document",
     )
     return parser
 
@@ -146,10 +155,7 @@ def get_arg_parser_classification():
         "--dataset", type=str, required=True, help=constants.DATASET_CLASSIFICATION_HELP
     )
     parser.add_argument(
-        "--capitalization",
-        type=str,
-        default="original",
-        help=constants.CAPITALIZATION_HELP,
+        "--capitalization", type=int, default=0, help=constants.CAPITALIZATION_HELP
     )
     parser.add_argument(
         "--feature_extraction",

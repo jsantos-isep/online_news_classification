@@ -19,7 +19,6 @@ from river import compose, drift
 from river import feature_extraction as fx
 from river import forest, metrics, naive_bayes, neighbors, stream, tree
 from send2trash import send2trash
-from transformers import pipeline
 
 from online_news_classification import constants
 from online_news_classification.functions import manage_datasets, setup
@@ -53,8 +52,8 @@ def feature_extraction_model(args):
 
 def classifier_model(args):
     classification_type = args.classification_type
-    grace_period = float(os.getenv("GRACE_PERIOD"))
-    delta = float(os.getenv("DELTA"))
+    grace_period = os.getenv("GRACE_PERIOD")
+    delta = os.getenv("DELTA")
     split_criterion = os.getenv("SPLIT_CRITERION")
 
     classifier_map = {
@@ -69,9 +68,9 @@ def classifier_model(args):
             seed=1,
         ),
         "hdt_non_adaptive": tree.HoeffdingTreeClassifier(
-            grace_period=grace_period,
-            delta=delta,
-            split_criterion=split_criterion,
+            grace_period=float(os.getenv("GRACE_PERIOD")),
+            delta=float(os.getenv("DELTA")),
+            split_criterion=os.getenv("SPLIT_CRITERION"),
             max_depth=1000,
             nominal_attributes=["category"],
         ),
@@ -80,10 +79,6 @@ def classifier_model(args):
             n_estimators=10, use_aggregation=True, dirichlet=0.5, seed=1
         ),
         "knn": neighbors.KNNClassifier(),
-        "llm": pipeline(
-            "zero-shot-classification",
-            model="MoritzLaurer/deberta-v3-base-zeroshot-v2.0",
-        ),
     }
 
     classifier = classifier_map.get(
@@ -120,27 +115,20 @@ def get_text(args, xi, stemming):
         text = stemming
     elif args.dataset_type == "enriched":
         if args.text == "title":
-            text = xi["wikidata_title_entities"]
+            text = xi["title_entities"]
         elif args.text == "abstract":
-            text = xi["wikidata_abstract_entities"]
+            text = xi["abstract_entities"]
         else:
-            text = xi["wikidata_title_entities"] + xi["wikidata_abstract_entities"]
+            text = xi["title_entities"] + xi["abstract_entities"]
     else:
         if args.text == "title":
-            xi["wikidata_title_entities"] = ast.literal_eval(
-                xi["wikidata_title_entities"]
-            )
-            entities = " ".join([sub for sub in xi["wikidata_title_entities"]])
+            xi["title_entities"] = ast.literal_eval(xi["title_entities"])
+            entities = " ".join([sub for sub in xi["title_entities"]])
             text = stemming + entities
         elif args.text == "abstract":
-            text = stemming + xi["wikidata_abstract_entities"]
+            text = stemming + xi["abstract_entities"]
         else:
-            text = (
-                stemming
-                + xi["wikidata_title_entities"]
-                + " "
-                + xi["wikidata_abstract_entities"]
-            )
+            text = stemming + xi["title_entities"] + " " + xi["abstract_entities"]
     return text
 
 
@@ -182,7 +170,6 @@ def classify(args, files, model_pkl_file):
     feature_extraction = feature_extraction_model(args)
     classifier = classifier_model(args)
 
-    # if args.classification_type != "llm":
     pipeline_original = compose.Pipeline(
         ("feature_extraction", feature_extraction), ("classifier", classifier)
     )
@@ -213,7 +200,6 @@ def classify(args, files, model_pkl_file):
         dataset["text"] = pd.Series(dtype="string")
 
         target = dataset["category"]
-        candidate_labels = list(dict.fromkeys(target))
         docs = dataset.drop(["category"], axis=1)
 
         i = 0
@@ -232,32 +218,15 @@ def classify(args, files, model_pkl_file):
             xi["text"] = get_text(args, xi, stemming)
 
             # logging.info(xi["text"])
-            if args.classification_type != "llm":
-                pipeline_original["feature_extraction"].learn_one(xi)
-                transformed_doc = pipeline_original["feature_extraction"].transform_one(
-                    xi
-                )
-                # logging.info("Feature extraction result = %s", transformed_doc)
+            pipeline_original["feature_extraction"].learn_one(xi)
+            transformed_doc = pipeline_original["feature_extraction"].transform_one(xi)
+            # logging.info("Feature extraction result = %s", transformed_doc)
 
-                # Make predictions and update the evaluation metric using the classifier
-                y_pred = pipeline_original["classifier"].predict_one(transformed_doc)
-            else:
-                # logging.info(candidate_labels)
-                # logging.info(xi["text"])
-                classification_result = pipeline_original["classifier"](
-                    xi["text"], candidate_labels
-                )
-                # logging.info(classification_result)
-                # Find the index of the highest score
-                # max_score_index = max(
-                #     enumerate(classification_result["scores"]), key=lambda x: x[1]
-                # )[0]
-                y_pred = classification_result["labels"][0]
-                # logging.info(y_pred)
-
+            # Make predictions and update the evaluation metric using the classifier
+            y_pred = pipeline_original["classifier"].predict_one(transformed_doc)
             metric.update(yi, y_pred)
             accuracies.append(metric.get().real)
-            if i == 100:
+            if i == 10000:
                 logging.info("Index = %s", index)
                 logging.info("Accuracy = %s", metric.get().real)
                 i = 0
@@ -279,21 +248,20 @@ def classify(args, files, model_pkl_file):
             else:
                 preq_w.append(soma_w / (index + 1))
 
-            if args.classification_type != "llm":
-                detector = get_detector(args, pipeline_original)
+            detector = get_detector(args, pipeline_original)
 
-                _ = detector.update(val)
-                if detector.drift_detected:
-                    logging.info(
-                        "Change detected at index %s, input value: %s, predict value %s",
-                        index,
-                        yi,
-                        y_pred,
-                    )
-                    drifts.append({"index": index, "input": yi, "predict": y_pred})
+            _ = detector.update(val)
+            if detector.drift_detected:
+                logging.info(
+                    "Change detected at index %s, input value: %s, predict value %s",
+                    index,
+                    yi,
+                    y_pred,
+                )
+                drifts.append({"index": index, "input": yi, "predict": y_pred})
 
-                # Update the classifier with the preprocessed features and the true label
-                pipeline_original["classifier"].learn_one(transformed_doc, yi)
+            # Update the classifier with the preprocessed features and the true label
+            pipeline_original["classifier"].learn_one(transformed_doc, yi)
             index += 1
 
         summary_file = os.path.join(
@@ -301,18 +269,21 @@ def classify(args, files, model_pkl_file):
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/summary/"
-            + args.dataset,
+            + os.path.splitext(os.path.basename(file))[0],
         )
         plot_file = os.path.join(
             os.getcwd(),
-            os.getenv("DATASETS_FOLDER") + args.results_dir + "/plot/" + args.dataset,
+            os.getenv("DATASETS_FOLDER")
+            + args.results_dir
+            + "/plot/"
+            + os.path.splitext(os.path.basename(file))[0],
         )
         plot_aux_file = os.path.join(
             os.getcwd(),
             os.getenv("DATASETS_FOLDER")
             + args.results_dir
             + "/plot_aux/"
-            + args.dataset,
+            + os.path.splitext(os.path.basename(file))[0],
         )
         # tree_file = os.path.join(
         #     os.getcwd(),
@@ -333,7 +304,6 @@ def classify(args, files, model_pkl_file):
             f"{plot_file}_{str(args.capitalization)}_{args.classification_type}"
             + f"_{args.feature_extraction}_{args.text}_{args.dataset_type}_plot.png"
         )
-        plt.close()
 
         # create summary
         with open(
