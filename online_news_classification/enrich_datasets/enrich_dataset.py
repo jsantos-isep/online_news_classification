@@ -1,23 +1,13 @@
-import glob
 import logging
 import os
-import shutil
 import time
-from multiprocessing import Pool
 
 import pandas as pd
 from dotenv import load_dotenv
 from send2trash import send2trash
 
 from online_news_classification import constants
-from online_news_classification.functions import (
-    connections,
-    enrich,
-    general,
-    manage_datasets,
-    setup,
-    wikidata_mapper,
-)
+from online_news_classification.functions import enrich, general, manage_datasets, setup
 
 load_dotenv()
 

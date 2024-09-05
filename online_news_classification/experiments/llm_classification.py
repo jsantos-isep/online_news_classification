@@ -16,9 +16,8 @@ from natsort import natsorted, realsorted
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
-from river import compose, drift
 from river import feature_extraction as fx
-from river import forest, metrics, naive_bayes, neighbors, stream, tree
+from river import metrics
 from send2trash import send2trash
 from transformers import pipeline
 
@@ -177,7 +176,6 @@ def classify(args, files, model_pkl_file):
         logging.info("Ending pre processing")
         target = dataset["category"]
         candidate_labels = list(dict.fromkeys(target))
-        docs = dataset.drop(["category"], axis=1)
 
         i = 0
 
