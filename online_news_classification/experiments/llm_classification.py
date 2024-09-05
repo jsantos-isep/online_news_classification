@@ -10,6 +10,7 @@ import time
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from datasets import Dataset
 from dotenv import load_dotenv
 from natsort import natsorted, realsorted
 from nltk.corpus import stopwords
@@ -49,54 +50,6 @@ def feature_extraction_model(args):
     else:
         feature_extraction = fx.TFIDF(lowercase=True, strip_accents=False, on="text")
     return feature_extraction
-
-
-def classifier_model(args):
-    classification_type = args.classification_type
-    grace_period = float(os.getenv("GRACE_PERIOD"))
-    delta = float(os.getenv("DELTA"))
-    split_criterion = os.getenv("SPLIT_CRITERION")
-
-    classifier_map = {
-        "hdt_adaptive": tree.HoeffdingAdaptiveTreeClassifier(
-            grace_period=grace_period,
-            delta=delta,
-            split_criterion=split_criterion,
-            max_depth=1000,
-            bootstrap_sampling=False,
-            drift_detector=drift.binary.DDM(),
-            nominal_attributes=["category"],
-            seed=1,
-        ),
-        "hdt_non_adaptive": tree.HoeffdingTreeClassifier(
-            grace_period=grace_period,
-            delta=delta,
-            split_criterion=split_criterion,
-            max_depth=1000,
-            nominal_attributes=["category"],
-        ),
-        "naive_bayes": naive_bayes.MultinomialNB(alpha=1),
-        "forest_amf": forest.AMFClassifier(
-            n_estimators=10, use_aggregation=True, dirichlet=0.5, seed=1
-        ),
-        "knn": neighbors.KNNClassifier(),
-        "llm": pipeline(
-            "zero-shot-classification",
-            model="MoritzLaurer/deberta-v3-base-zeroshot-v2.0",
-        ),
-    }
-
-    classifier = classifier_map.get(
-        classification_type, classifier_map["hdt_non_adaptive"]
-    )
-
-    if classification_type not in classifier_map:
-        logging.info(
-            f"Warning: Unsupported classification type '{classification_type}'. "
-            + "Using default classifier."
-        )
-
-    return classifier
 
 
 def remove_punctuation(args, xi):
@@ -144,17 +97,21 @@ def get_text(args, xi, stemming):
     return text
 
 
-def get_detector(args, pipeline_original):
-    if args.classification_type == "adaptive":
-        detector = pipeline_original["classifier"].drift_detector
-    else:
-        detector = drift.binary.DDM()
-    return detector
-
-
 def add_drifts_to_plot(drifts, plt):
     for d in drifts:
         plt.axvline(x=d["index"], color="r")
+
+
+def batch_zero_shot_classify(classifier, batch, candidate_labels):
+    # Applying the zero-shot classification in batch
+    texts = batch["text"]
+    targets = batch["category"]
+    results = classifier(texts, candidate_labels, truncation=True)
+    return {
+        "labels": [result["labels"][0] for result in results],
+        "targets": [target for target in targets],
+        "scores": [result["scores"][0] for result in results],
+    }
 
 
 def classify(args, files, model_pkl_file):
@@ -179,19 +136,16 @@ def classify(args, files, model_pkl_file):
     accuracies = []
     index = 0
 
-    feature_extraction = feature_extraction_model(args)
-    classifier = classifier_model(args)
-
-    # if args.classification_type != "llm":
-    pipeline_original = compose.Pipeline(
-        ("feature_extraction", feature_extraction), ("classifier", classifier)
+    classifier = pipeline(
+        "zero-shot-classification",
+        model="valhalla/distilbart-mnli-12-1",
     )
 
     if os.path.exists(model_pkl_file):
         # Open the pickle file in binary read mode
         with open(model_pkl_file, "rb") as file:
             data = pickle.load(file)
-            pipeline_original = data["model"]
+            classifier = data["model"]
             preq = data["preq"]
             preq_a = data["preq_a"]
             preq_w = data["preq_w"]
@@ -212,57 +166,41 @@ def classify(args, files, model_pkl_file):
         dataset["title_stemmed"] = pd.Series(dtype="string")
         dataset["text"] = pd.Series(dtype="string")
 
+        for index_x, row in dataset.iterrows():
+            text_no_punct = remove_punctuation(args, row)
+            word_tokens = word_tokenize(text_no_punct)
+            stemming = " ".join([ps.stem(word) for word in word_tokens])
+
+            dataset.at[index_x, "title_stemmed"] = stemming
+            dataset.at[index_x, "text"] = get_text(args, row, stemming)
+
+        logging.info("Ending pre processing")
         target = dataset["category"]
         candidate_labels = list(dict.fromkeys(target))
         docs = dataset.drop(["category"], axis=1)
 
         i = 0
 
-        # Perform the online classification loop
-        for xi, yi in stream.iter_pandas(docs, target):
+        dataset_hugging = Dataset.from_pandas(dataset)
+
+        results = dataset_hugging.map(
+            lambda batch: batch_zero_shot_classify(classifier, batch, candidate_labels),
+            batched=True,
+            batch_size=50,
+        )
+
+        for result in results:
+            logging.info(result["targets"])
             i += 1
-            # Preprocess the current instance
-            text_no_punct = remove_punctuation(args, xi)
-            word_tokens = word_tokenize(text_no_punct)
-            stemming = " ".join([ps.stem(word) for word in word_tokens])
 
-            # logging.info("Stemming = %s", stemming)
-            xi["title_stemmed"] = stemming
-
-            xi["text"] = get_text(args, xi, stemming)
-
-            # logging.info(xi["text"])
-            if args.classification_type != "llm":
-                pipeline_original["feature_extraction"].learn_one(xi)
-                transformed_doc = pipeline_original["feature_extraction"].transform_one(
-                    xi
-                )
-                # logging.info("Feature extraction result = %s", transformed_doc)
-
-                # Make predictions and update the evaluation metric using the classifier
-                y_pred = pipeline_original["classifier"].predict_one(transformed_doc)
-            else:
-                # logging.info(candidate_labels)
-                # logging.info(xi["text"])
-                classification_result = pipeline_original["classifier"](
-                    xi["text"], candidate_labels
-                )
-                # logging.info(classification_result)
-                # Find the index of the highest score
-                # max_score_index = max(
-                #     enumerate(classification_result["scores"]), key=lambda x: x[1]
-                # )[0]
-                y_pred = classification_result["labels"][0]
-                # logging.info(y_pred)
-
-            metric.update(yi, y_pred)
+            metric.update(result["targets"], result["labels"])
             accuracies.append(metric.get().real)
             if i == 100:
                 logging.info("Index = %s", index)
                 logging.info("Accuracy = %s", metric.get().real)
                 i = 0
 
-            val = 0 if y_pred == yi else 1
+            val = 0 if result["labels"] == result["targets"] else 1
 
             preds.append(val)
             soma += val
@@ -278,22 +216,6 @@ def classify(args, files, model_pkl_file):
                 preq_w.append(soma_w / 500)
             else:
                 preq_w.append(soma_w / (index + 1))
-
-            if args.classification_type != "llm":
-                detector = get_detector(args, pipeline_original)
-
-                _ = detector.update(val)
-                if detector.drift_detected:
-                    logging.info(
-                        "Change detected at index %s, input value: %s, predict value %s",
-                        index,
-                        yi,
-                        y_pred,
-                    )
-                    drifts.append({"index": index, "input": yi, "predict": y_pred})
-
-                # Update the classifier with the preprocessed features and the true label
-                pipeline_original["classifier"].learn_one(transformed_doc, yi)
             index += 1
 
         summary_file = os.path.join(
@@ -417,7 +339,7 @@ def classify(args, files, model_pkl_file):
 
         with open(model_pkl_file, "wb") as model_file:
             model_to_file = {
-                "model": pipeline_original,
+                "model": classifier,
                 "preq": preq,
                 "preq_a": preq_a,
                 "preq_w": preq_w,
@@ -438,9 +360,7 @@ def classify(args, files, model_pkl_file):
 
 def main():
     args = setup.get_arg_parser_classification().parse_args()
-    start_time = setup.initialize(
-        "new_experiment_" + str(args.capitalization) + "_" + args.dataset
-    )
+    start_time = setup.initialize("new_experiment_llm_" + args.dataset)
     in_directory = os.path.join(
         os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir
     )

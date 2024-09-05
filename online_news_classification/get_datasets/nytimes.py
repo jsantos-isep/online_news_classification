@@ -13,7 +13,7 @@ load_dotenv()
 
 
 def main():
-    args = setup.get_arg_parser_get_dataset_from_api().parse_args()
+    args = setup.get_arg_parser_get_dataset_nytimes().parse_args()
     start_time = setup.initialize("get_dataset")
     API_KEY = os.getenv("NYTIMES_API_KEY")
 
@@ -40,9 +40,12 @@ def main():
                 json_string = json.dumps(
                     {"results": response.json()["response"]["docs"]}
                 )
-                folder = os.getenv("DATASETS_FOLDER_NY_TIMES_ORIGINAL")
+                folder = os.getenv("DATASETS_FOLDER_NY_TIMES_ORIGINAL_JSON")
+                exist = os.path.exists(folder)
+                if not exist:
+                    os.makedirs(folder)
                 with open(
-                    f"{folder}the_ny_times_{str(current_year)}"
+                    f"{folder}/the_ny_times_{str(current_year)}"
                     + f"_{str(current_month)}.json",
                     "w",
                 ) as outfile:
