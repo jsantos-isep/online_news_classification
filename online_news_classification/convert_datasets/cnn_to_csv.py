@@ -1,7 +1,6 @@
 import logging
 import time
 
-import pandas as pd
 from dotenv import load_dotenv
 
 from online_news_classification.functions import manage_datasets, setup
@@ -19,9 +18,6 @@ def main():
     dataset["category"] = dataset["Category"]
     dataset["abstract"] = dataset["Description"]
     dataset["date"] = dataset["Date published"]
-    dataset["title_entities"] = pd.Series(dtype="object")
-    dataset["abstract_entities"] = pd.Series(dtype="object")
-    dataset["entities"] = pd.Series(dtype="object")
     dataset = dataset.drop(
         [
             "Index",
