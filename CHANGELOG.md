@@ -1,12 +1,5 @@
 # Changelog
 
-## [1.3.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.2.0...v1.3.0) (2024-11-18)
-
-
-### Features
-
-* LLM classification ([9c57e31](https://github.com/jsantos-isep/online_news_classification/commit/9c57e3140ab1f17ec6993e9e40158228fbc79f52))
-
 ## [1.2.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.7...v1.2.0) (2024-09-05)
 
 
