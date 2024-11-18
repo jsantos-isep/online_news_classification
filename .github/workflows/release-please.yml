@@ -74,6 +74,7 @@ jobs:
   #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   release-please:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: googleapis/release-please-action@v4
         with:
