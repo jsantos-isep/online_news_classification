@@ -15,8 +15,8 @@ def convert(f, output_file):
     logging.info(len(data))
     data["title"] = data["headline.main"]
     data["category"] = data["section_name"]
-    data['title'] = data['title'].replace(r'^\s*$', '', regex=True)
-    data['abstract'] = data['abstract'].replace(r'^\s*$', '', regex=True)
+    data = data[data["title"] != ""]
+    data = data[data["abstract"] != ""]
     data = data[data["category"] != ""]
     data = data.drop(
         [
@@ -46,19 +46,15 @@ def convert(f, output_file):
     )
     data["final_tags"] = pd.Series(dtype="object")
 
-    # Sort the DataFrame by the 'date' column in descending order
-    df_sorted = data.sort_values(by='pub_date', ascending=True)
-
-    for index, row in df_sorted.iterrows():
+    for index, row in data.iterrows():
         tags = []
         for tag in row["keywords"]:
             tags.append(str(tag["value"]))
-        df_sorted.at[index, "final_tags"] = list(tags)
+        data.at[index, "final_tags"] = list(tags)
 
-    df_sorted = df_sorted.drop(["keywords"], axis=1)
-    df_sorted.rename(columns={'final_tags': 'keywords'}, inplace=True)
+    data = data.drop(["keywords"], axis=1)
 
-    manage_datasets.save_dataset(df_sorted, output_file + ".csv")
+    manage_datasets.save_dataset(data, output_file + ".csv")
 
 
 def main():

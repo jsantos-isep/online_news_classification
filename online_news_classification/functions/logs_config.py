@@ -10,6 +10,7 @@ load_dotenv()
 def create_log_file(name):
     logging.basicConfig(
         filename=os.path.join(
+            os.getcwd(),
             os.getenv("LOG_FOLDER")
             + datetime.now().strftime("%d%m%Y_%I%M%S%p")
             + "_"
