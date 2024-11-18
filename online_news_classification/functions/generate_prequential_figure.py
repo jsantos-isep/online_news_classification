@@ -31,7 +31,7 @@ def main():
     enriched_preq_w = [min(num, 0.99) for num in enriched_preq_w]
 
     # create prequential
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(15, 8))
     ax.plot(range(len(enriched_preq)), non_enriched_preq, label="Non-Enriched")
     ax.plot(range(len(enriched_preq)), enriched_preq, label="Enriched")
     ax.set_ylabel("prequential error rate")

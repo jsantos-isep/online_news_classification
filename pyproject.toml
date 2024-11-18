@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "online-news-classification"
-version = "1.2.0"
+version = "1.3.0"
 description = ""
 authors = ["Joana Santos <ffs@isep.ipp.pt>"]
 readme = "README.md"

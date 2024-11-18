@@ -4,7 +4,7 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
-from natsort import realsorted
+from natsort import natsorted
 
 from online_news_classification.functions import manage_datasets, setup
 
@@ -24,11 +24,11 @@ def main():
     start_time = setup.initialize("merge_files_" + args.dataset)
     input_dir = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + args.input_dir)
     lines = []
-    for filename in realsorted(os.listdir(input_dir)):
+    for filename in natsorted(os.listdir(input_dir)):
         if filename.endswith(".csv"):
             lines.append(pd.read_csv(os.path.join(input_dir, filename), delimiter=";"))
     df_res = pd.concat(lines, ignore_index=True)
-    df_res = df_res.drop(["Unnamed: 0"], axis=1)
+    #df_res = df_res.drop(["Unnamed: 0"], axis=1)
     manage_datasets.save_dataset(df_res, args.output_file)
     logging.info("--- %s seconds ---" % (time.time() - start_time))
 
