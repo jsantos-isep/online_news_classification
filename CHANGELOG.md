@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.3...v1.3.4) (2024-11-19)
+
+
+### Bug Fixes
+
+* Update pyproject.toml ([676de85](https://github.com/jsantos-isep/online_news_classification/commit/676de85c2d40d01497a8a3b29373432100751762))
+
 ## [1.3.3](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.2...v1.3.3) (2024-11-19)
 
 
