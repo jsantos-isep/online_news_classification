@@ -64,9 +64,7 @@ def freeze_all_layers_but_classifier(model):
 
 
 # Function to predict labels and calculate metrics for each partition
-def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encoder, 
-                         all_predictions, all_true_categories, device, args, 
-                         candidate_labels, all_class_accuracies, count_classes):
+def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encoder, all_predictions, all_true_categories, device, args, candidate_labels, all_class_accuracies, count_classes):
     start_time = time.time()
     texts = df_partition[text_type].tolist()
     true_labels = df_partition['category'].tolist()
@@ -95,11 +93,9 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
     # Calculate metrics before training
     accuracy = accuracy_score(true_labels, predictions)
     f1 = f1_score(true_labels, predictions, average='weighted', zero_division=0)
-    precision = precision_score(true_labels, predictions, average='weighted',
-                                zero_division=0)
+    precision = precision_score(true_labels, predictions, average='weighted', zero_division=0)
     recall = recall_score(true_labels, predictions, average='weighted', zero_division=0)
-    class_report = classification_report(true_labels, predictions, output_dict=True,
-                                         zero_division=0)
+    class_report = classification_report(true_labels, predictions, output_dict=True, zero_division=0)
 
     result = pd.DataFrame({})
     if args.experiment == 'without_fine_tuning':
@@ -115,8 +111,7 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
         model.train()  # Ensure model is in training mode during fine-tuning
 
         # Initialize optimizer and loss function
-        optimizer = AdamW(filter(lambda p: p.requires_grad, model.parameters()), 
-                          lr=5e-5)  # Learning rate can be adjusted
+        optimizer = AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=5e-5)  # Learning rate can be adjusted
         criterion = nn.CrossEntropyLoss().to(device)
 
         # Calculate the loss (for fine-tuning)
@@ -157,8 +152,7 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
                 class_accuracies.append(true_positives[i]/total_actuals[i])
                 all_class_accuracies[i] += true_positives[i]/total_actuals[i]
 
-        df = pd.DataFrame(all_class_accuracies,
-                          index=candidate_labels, columns=['value'])
+        df = pd.DataFrame(all_class_accuracies, index=candidate_labels, columns=['value'])
 
         # Sort by values in ascending order
         df_sorted = df.sort_values(by='value')
@@ -204,12 +198,10 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
                         ddf_filtered['category']).tolist()
 
                     # Create the dataset
-                    dataset = TextDataset(ddf_filtered_text, ddf_filtered_category, 
-                                          tokenizer, max_length)
+                    dataset = TextDataset(ddf_filtered_text, ddf_filtered_category, tokenizer, max_length)
                     train_dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
 
-                    optimizer = AdamW(filter(lambda p: p.requires_grad, 
-                                             model.parameters()), lr=5e-5)
+                    optimizer = AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=5e-5)
 
                     for batch in train_dataloader:
                         optimizer.zero_grad()
@@ -228,12 +220,10 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
                     true_labels = df_partition['category'].tolist()
 
                     # Tokenize the input texts
-                    inputs = tokenizer(texts, return_tensors='pt', padding=True, 
-                                       truncation=True)
+                    inputs = tokenizer(texts, return_tensors='pt', padding=True, truncation=True)
 
                     # Move the inputs to the GPU
-                    inputs = {key: value.to(device) for key, value in
-                              inputs.items()}
+                    inputs = {key: value.to(device) for key, value in inputs.items()}
 
                     # Perform forward pass to get logits
                     # (no gradient required for predictions)
@@ -252,8 +242,7 @@ def predict_and_evaluate(df_partition, text_type, tokenizer, model, label_encode
 
 def main():
     args = setup.get_arg_parser_llm_classification().parse_args()
-    start_time = setup.initialize(
-        f"{args.dataset}_{args.dataset_type}_{str(args.model).split('/')[-1]}_{args.experiment}",)
+    start_time = setup.initialize(f"{args.dataset}_{args.dataset_type}_{str(args.model).split('/')[-1]}_{args.experiment}",)
 
     # Initialize the prequential values
     soma, soma_a, nr_a, soma_w = 0, 0, 0, 0
@@ -268,6 +257,7 @@ def main():
         os.getenv(str(args.dataset).upper() + "_CATEGORIES")
     )
     label_encoder = LabelEncoder()
+    encoded_labels = label_encoder.fit_transform(candidate_labels)
 
     text_type = 'enriched_text' if str(args.dataset_type) == 'enriched' else 'tokenized_text'
 
@@ -279,21 +269,18 @@ def main():
         model_dir = f"{args.fine_tuned}/{str(args.model).split('/')[-1]}_{args.dataset}_fine_tuned"
 
         # Load the fine-tuned model and tokenizer
-        model = AutoModelForSequenceClassification.from_pretrained(model_dir,
-                                                                   num_labels=len(candidate_labels)).to(device)
+        model = AutoModelForSequenceClassification.from_pretrained(model_dir, num_labels=len(candidate_labels)).to(device)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
 
     else:
-        model = AutoModelForSequenceClassification.from_pretrained(model_name,
-                                                                   num_labels=len(candidate_labels), ignore_mismatched_sizes=True).to(device)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(candidate_labels), ignore_mismatched_sizes=True).to(device)
         tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Freeze all layers except the classification head
     freeze_all_layers_but_classifier(model)
 
     # Load CSV file into Dask DataFrame
-    ddf = dd.read_csv(args.input_file, sep=";", usecols=['tokenized_text',
-                                                         'enriched_text', 'category'])
+    ddf = dd.read_csv(args.input_file, sep=";", usecols=['tokenized_text', 'enriched_text', 'category'])
 
     # Partition the data into chunks (~1000 documents per partition)
     logging.info(len(ddf))
@@ -326,19 +313,9 @@ def main():
         number_of_documents += len(df_partition)
 
         # Apply your custom processing on the Pandas DataFrame
-        result, model = predict_and_evaluate(df_partition, text_type=text_type,
-                                             tokenizer=tokenizer, model=model,
-                                             label_encoder=label_encoder,
-                                             all_predictions=all_predictions,
-                                             all_true_categories=all_true_categories,
-                                             device=device, args=args,
-                                             candidate_labels=candidate_labels,
-                                             all_class_accuracies=all_class_accuracies,
-                                             count_classes=count_classes)
+        result, model = predict_and_evaluate(df_partition, text_type=text_type, tokenizer=tokenizer, model=model, label_encoder=label_encoder,all_predictions=all_predictions, all_true_categories=all_true_categories, device=device, args=args, candidate_labels=candidate_labels, all_class_accuracies=all_class_accuracies, count_classes=count_classes)
         if i % 10 == 0 or i == len(partitions) - 1:
-            result.to_csv(f"{args.classification_reports_folder}/{args.dataset}/" +
-                          f"{str(args.model).split('/')[-1]}_{args.dataset_type}" +
-                          f"_partition_{i + 1}.csv", index=False)
+            result.to_csv(f"{args.classification_reports_folder}/{args.dataset}/{str(args.model).split('/')[-1]}_{args.dataset_type}_partition_{i + 1}.csv", index=False)
 
     if args.experiment != 'without_fine_tuning':
         # Calculate prequential
