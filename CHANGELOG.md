@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.1](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.0...v1.3.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* lint ([5448ac1](https://github.com/jsantos-isep/online_news_classification/commit/5448ac1b2073d38d0d65275fbc70f8b56f54e2d8))
+* llm classification ([d74f7d3](https://github.com/jsantos-isep/online_news_classification/commit/d74f7d32f316e753f9e303810b3838eb59f745d6))
+* version ([6c46831](https://github.com/jsantos-isep/online_news_classification/commit/6c468318dd4ffd5b80cc56b5de29d010db4014d3))
+
 ## [1.3.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.2.0...v1.3.0) (2024-11-18)
 
 
