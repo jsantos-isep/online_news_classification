@@ -1,2 +1,7 @@
 [run]
 source = online_news_classification
+
+[paths]
+source =
+    /home/runner/work/online_news_classification/online_news_classification
+    .
