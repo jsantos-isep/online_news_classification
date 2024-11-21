@@ -19,6 +19,9 @@ class TestTheGuardianToCSV:
     def test_remove_html_tags_without_html(self):
        assert remove_html_tags("Hello World"), "Hello World"
 
+    def test_remove_html_not_text(self):
+       assert remove_html_tags(1234), 1234
+
     def test_convert(self):
         filepath = "tests/mocks/the_guardian_test_output.csv"
         if os.path.exists(filepath):
