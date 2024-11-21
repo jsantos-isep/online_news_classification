@@ -1,5 +1,4 @@
 [run]
-source = online_news_classification
 omit =
     */tests/*
 
