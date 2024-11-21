@@ -83,7 +83,7 @@ jobs:
         run: cd online_news_classification
       - name: Run tests
         run: |
-          pytest --cov=online_news_classification --maxfail=1 --disable-warnings -q --cov-report=xml
+          pytest --cov=. --maxfail=1 --disable-warnings -q --cov-report=xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
