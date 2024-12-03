@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.3.4](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.3...v1.3.4) (2024-11-19)
+
+
+### Bug Fixes
+
+* Update pyproject.toml ([676de85](https://github.com/jsantos-isep/online_news_classification/commit/676de85c2d40d01497a8a3b29373432100751762))
+
+## [1.3.3](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.2...v1.3.3) (2024-11-19)
+
+
+### Bug Fixes
+
+* Update pyproject.toml ([6f51336](https://github.com/jsantos-isep/online_news_classification/commit/6f513365d1aecfb375eea0ba2057fa975509603a))
+
+## [1.3.2](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.1...v1.3.2) (2024-11-19)
+
+
+### Bug Fixes
+
+* Update pyproject.toml ([5891887](https://github.com/jsantos-isep/online_news_classification/commit/589188771268a00fd1aefad1657c04f2f7dc7886))
+
+## [1.3.1](https://github.com/jsantos-isep/online_news_classification/compare/v1.3.0...v1.3.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* lint ([5448ac1](https://github.com/jsantos-isep/online_news_classification/commit/5448ac1b2073d38d0d65275fbc70f8b56f54e2d8))
+* llm classification ([d74f7d3](https://github.com/jsantos-isep/online_news_classification/commit/d74f7d32f316e753f9e303810b3838eb59f745d6))
+* version ([6c46831](https://github.com/jsantos-isep/online_news_classification/commit/6c468318dd4ffd5b80cc56b5de29d010db4014d3))
+
+## [1.3.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.2.0...v1.3.0) (2024-11-18)
+
+
+### Features
+
+* LLM classification ([9c57e31](https://github.com/jsantos-isep/online_news_classification/commit/9c57e3140ab1f17ec6993e9e40158228fbc79f52))
+
 ## [1.2.0](https://github.com/jsantos-isep/online_news_classification/compare/v1.1.7...v1.2.0) (2024-09-05)
 
 

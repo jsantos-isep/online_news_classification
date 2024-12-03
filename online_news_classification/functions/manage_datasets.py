@@ -1,4 +1,5 @@
 import os
+from operator import index
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -38,7 +39,7 @@ def read_table_dataset(filename, columns):
 
 def save_dataset(dataset, filename):
     file = os.path.join(os.getcwd(), os.getenv("DATASETS_FOLDER") + filename)
-    dataset.to_csv(file, sep=";")
+    dataset.to_csv(file, sep=";", index=False)
 
 
 def load_dataset(filename):

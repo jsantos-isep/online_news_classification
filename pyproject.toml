@@ -1,13 +1,12 @@
 [tool.poetry]
 name = "online-news-classification"
-version = "1.2.0"
+version = "v1.3.4"
 description = ""
 authors = ["Joana Santos <ffs@isep.ipp.pt>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-
 
 [build-system]
 requires = ["poetry-core"]

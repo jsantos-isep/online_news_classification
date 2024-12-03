@@ -1,0 +1,14 @@
+[run]
+source = online_news_classification
+omit =
+    */tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == "__main__":
+
+[paths]
+source =
+    /home/runner/work/online_news_classification/online_news_classification/online_news_classification
+    online_news_classification

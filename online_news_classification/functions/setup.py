@@ -132,6 +132,66 @@ def get_arg_parser_enrich():
     )
     return parser
 
+def get_arg_parser_enrich_1():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--input_file",
+        type=str,
+        required=True,
+        help="file to enrich",
+    )
+    parser.add_argument(
+        "--output_file", type=str, required=True, help="path to enriched file"
+    )
+    parser.add_argument(
+        "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
+    )
+    return parser
+
+def get_arg_parser_llm_classification():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model", type=str, required=True, help="Model used for classification"
+    )
+    parser.add_argument(
+        "--input_file",
+        type=str,
+        required=True,
+        help="file to enrich",
+    )
+    parser.add_argument(
+        "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
+    )
+    parser.add_argument(
+        "--dataset_type", type=str, required=True, help="Original or enriched"
+    )
+    parser.add_argument(
+        "--classification_reports_folder", type=str, required=True, help="Folder to save the classification reports"
+    )
+    parser.add_argument(
+        "--experiment", type=str, required=True, help="Type of experiment"
+    )
+    parser.add_argument(
+        "--fine_tuned", type=str, required=True, help="Fine-tuned folder for save models"
+    )
+    return parser
+
+def get_arg_parser_pre_processing():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--input_file",
+        type=str,
+        required=True,
+        help="file to enrich",
+    )
+    parser.add_argument(
+        "--output_file", type=str, required=True, help="path to enriched file"
+    )
+    parser.add_argument(
+        "--dataset", type=str, required=True, help=constants.DATASET_ENRICH_HELP
+    )
+    return parser
+
 
 def get_arg_parser_classification():
     parser = argparse.ArgumentParser()
